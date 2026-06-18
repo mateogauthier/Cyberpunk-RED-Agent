@@ -128,26 +128,30 @@ header {
 
 /* ── DECORATIVE BAR ── */
 .deck-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  overflow: hidden;
+  white-space: nowrap;
   padding: 6px 0;
   flex-shrink: 0;
   border-bottom: 1px solid var(--border);
-  overflow: hidden;
 }
 
-.deck-bar span {
+.deck-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 20px;
+  animation: ticker 18s linear infinite;
+}
+
+.deck-track span {
   font-size: 10px;
   color: var(--text-dim);
   letter-spacing: 1px;
   white-space: nowrap;
 }
 
-.deck-bar .bar-line {
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(to right, var(--border), transparent);
+.deck-track .bar-sep {
+  color: var(--red-dark);
+  font-size: 8px;
 }
 
 /* ── MESSAGES ── */
@@ -373,6 +377,11 @@ header {
 @keyframes bounce {
   0%, 80%, 100% { transform: scale(0); opacity: 0.4; }
   40%            { transform: scale(1);   opacity: 1;   }
+}
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 
 @keyframes glitch {

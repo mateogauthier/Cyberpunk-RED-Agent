@@ -27,8 +27,6 @@ An interactive chatbot that simulates an **Agent** from the Cyberpunk RED TTRPG 
     ```env
     OLLAMA_HOST=http://localhost:11434
     OLLAMA_MODEL=llama3.2
-    OLLAMA_HOST=http://localhost:11434
-    OLLAMA_MODEL=llama3.2
     OLLAMA_NUM_CTX=8192
     OLLAMA_NUM_PREDICT=-1
     LORE_MIN_SCORE=7.0

@@ -1,7 +1,9 @@
 from __future__ import annotations
 import os
 import re
+import pickle
 import logging
+import threading
 from pathlib import Path
 from typing import Optional
 
@@ -9,11 +11,12 @@ from rank_bm25 import BM25Okapi
 
 logger = logging.getLogger(__name__)
 
-LORE_DIR = Path("lore")
-CHUNK_SIZE = 400       # max words per chunk
-CHUNK_OVERLAP = 50     # words of overlap between chunks
-MIN_CHUNK_WORDS = 30   # discard tiny fragments
-TOP_K = 4              # chunks retrieved per query
+LORE_DIR   = Path("lore")
+CACHE_FILE = Path(".lore_cache.pkl")
+CHUNK_SIZE    = 400
+CHUNK_OVERLAP = 50
+MIN_CHUNK_WORDS = 30
+TOP_K = 4
 
 
 # ── DOCUMENT LOADING ─────────────────────────────────────────────────────────
@@ -23,12 +26,11 @@ def _load_txt(path: Path) -> str:
 
 
 def _load_md(path: Path) -> str:
-    # Strip markdown syntax, keep plain text
     text = path.read_text(encoding="utf-8", errors="ignore")
-    text = re.sub(r"^#{1,6}\s+", "", text, flags=re.MULTILINE)   # headings
-    text = re.sub(r"\*{1,3}(.+?)\*{1,3}", r"\1", text)           # bold/italic
-    text = re.sub(r"`{1,3}[^`]*`{1,3}", "", text)                 # code
-    text = re.sub(r"\[([^\]]+)\]\([^\)]+\)", r"\1", text)         # links
+    text = re.sub(r"^#{1,6}\s+", "", text, flags=re.MULTILINE)
+    text = re.sub(r"\*{1,3}(.+?)\*{1,3}", r"\1", text)
+    text = re.sub(r"`{1,3}[^`]*`{1,3}", "", text)
+    text = re.sub(r"\[([^\]]+)\]\([^\)]+\)", r"\1", text)
     return text
 
 
@@ -36,9 +38,7 @@ def _load_pdf(path: Path) -> str:
     try:
         import pypdf
         reader = pypdf.PdfReader(str(path))
-        return "\n\n".join(
-            page.extract_text() or "" for page in reader.pages
-        )
+        return "\n\n".join(page.extract_text() or "" for page in reader.pages)
     except Exception as e:
         logger.warning("Could not parse PDF %s: %s", path, e)
         return ""
@@ -48,7 +48,6 @@ _LOADERS = {".txt": _load_txt, ".md": _load_md, ".pdf": _load_pdf}
 
 
 def _load_all_documents() -> list[tuple[str, str]]:
-    """Return list of (source_label, text) for all supported files in lore/."""
     if not LORE_DIR.exists():
         return []
     docs = []
@@ -58,14 +57,13 @@ def _load_all_documents() -> list[tuple[str, str]]:
             text = loader(path).strip()
             if text:
                 docs.append((path.name, text))
-                logger.info("Loaded lore file: %s", path.name)
+                logger.info("Loaded: %s", path.name)
     return docs
 
 
 # ── CHUNKING ─────────────────────────────────────────────────────────────────
 
 def _chunk(source: str, text: str) -> list[dict]:
-    """Split text into overlapping word-window chunks."""
     words = text.split()
     chunks = []
     start = 0
@@ -73,13 +71,43 @@ def _chunk(source: str, text: str) -> list[dict]:
         end = min(start + CHUNK_SIZE, len(words))
         chunk_words = words[start:end]
         if len(chunk_words) >= MIN_CHUNK_WORDS:
-            chunks.append({
-                "source": source,
-                "text": " ".join(chunk_words),
-                "tokens": chunk_words,
-            })
+            chunks.append({"source": source, "text": " ".join(chunk_words), "tokens": chunk_words})
         start += CHUNK_SIZE - CHUNK_OVERLAP
     return chunks
+
+
+# ── CACHE ─────────────────────────────────────────────────────────────────────
+
+def _lore_max_mtime() -> float:
+    if not LORE_DIR.exists():
+        return 0.0
+    return max(
+        (p.stat().st_mtime for p in LORE_DIR.rglob("*")
+         if p.is_file() and p.suffix.lower() in _LOADERS),
+        default=0.0,
+    )
+
+
+def _cache_valid() -> bool:
+    return CACHE_FILE.exists() and CACHE_FILE.stat().st_mtime > _lore_max_mtime()
+
+
+def _load_cache():
+    try:
+        with CACHE_FILE.open("rb") as f:
+            return pickle.load(f)
+    except Exception as e:
+        logger.warning("Cache load failed: %s", e)
+        return None
+
+
+def _save_cache(chunks: list[dict], bm25: BM25Okapi) -> None:
+    try:
+        with CACHE_FILE.open("wb") as f:
+            pickle.dump((chunks, bm25), f)
+        logger.info("Lore cache saved to %s", CACHE_FILE)
+    except Exception as e:
+        logger.warning("Cache save failed: %s", e)
 
 
 # ── BM25 INDEX ───────────────────────────────────────────────────────────────
@@ -89,37 +117,46 @@ class LoreIndex:
         self._chunks: list[dict] = []
         self._bm25: Optional[BM25Okapi] = None
         self._loaded = False
+        self._lock = threading.Lock()
 
     def build(self) -> int:
-        """Load all lore files and build the BM25 index. Returns chunk count."""
+        if _cache_valid():
+            result = _load_cache()
+            if result is not None:
+                chunks, bm25 = result
+                with self._lock:
+                    self._chunks, self._bm25, self._loaded = chunks, bm25, True
+                logger.info("Lore index loaded from cache: %d chunks", len(chunks))
+                return len(chunks)
+
+        logger.info("Building lore index from source files (this may take a while)...")
         docs = _load_all_documents()
-        self._chunks = []
+        chunks: list[dict] = []
         for source, text in docs:
-            self._chunks.extend(_chunk(source, text))
+            chunks.extend(_chunk(source, text))
 
-        if self._chunks:
-            tokenized = [c["tokens"] for c in self._chunks]
-            self._bm25 = BM25Okapi(tokenized)
-        else:
-            self._bm25 = None
+        bm25 = BM25Okapi([c["tokens"] for c in chunks]) if chunks else None
+        if bm25:
+            _save_cache(chunks, bm25)
 
-        self._loaded = True
-        logger.info("Lore index built: %d chunks from %d files", len(self._chunks), len(docs))
-        return len(self._chunks)
+        with self._lock:
+            self._chunks, self._bm25, self._loaded = chunks, bm25, True
+
+        logger.info("Lore index built: %d chunks from %d files", len(chunks), len(docs))
+        return len(chunks)
 
     def retrieve(self, query: str, top_k: int = TOP_K) -> list[str]:
-        """Return the top_k most relevant lore chunks for a query, above the score threshold."""
-        if not self._bm25 or not self._chunks:
+        with self._lock:
+            bm25, chunks = self._bm25, self._chunks
+        if not bm25 or not chunks:
             return []
         min_score = float(os.getenv("LORE_MIN_SCORE", "7.0"))
-        query_tokens = query.lower().split()
-        scores = self._bm25.get_scores(query_tokens)
+        scores = bm25.get_scores(query.lower().split())
         ranked = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)
         results = []
         for i in ranked[:top_k]:
             if scores[i] >= min_score:
-                chunk = self._chunks[i]
-                results.append(f"[{chunk['source']}]\n{chunk['text']}")
+                results.append(f"[{chunks[i]['source']}]\n{chunks[i]['text']}")
         return results
 
     @property
@@ -131,5 +168,4 @@ class LoreIndex:
         return len(self._chunks)
 
 
-# Module-level singleton — built once at startup
 index = LoreIndex()

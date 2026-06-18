@@ -23,3 +23,6 @@ env/
 # Lore files — keep the folder tracked but not its contents (copyright)
 lore/*
 !lore/.gitkeep
+
+# Lore index cache (auto-generated from lore/)
+.lore_cache.pkl

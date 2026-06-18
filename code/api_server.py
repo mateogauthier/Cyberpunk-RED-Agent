@@ -1,4 +1,5 @@
 from __future__ import annotations
+import threading
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
@@ -14,7 +15,7 @@ load_dotenv()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    lore_index.build()
+    threading.Thread(target=lore_index.build, daemon=True).start()
     yield
 
 

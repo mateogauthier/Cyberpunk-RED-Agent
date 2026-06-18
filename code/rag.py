@@ -1,4 +1,5 @@
 from __future__ import annotations
+import os
 import re
 import logging
 from pathlib import Path
@@ -107,15 +108,16 @@ class LoreIndex:
         return len(self._chunks)
 
     def retrieve(self, query: str, top_k: int = TOP_K) -> list[str]:
-        """Return the top_k most relevant lore chunks for a query."""
+        """Return the top_k most relevant lore chunks for a query, above the score threshold."""
         if not self._bm25 or not self._chunks:
             return []
+        min_score = float(os.getenv("LORE_MIN_SCORE", "7.0"))
         query_tokens = query.lower().split()
         scores = self._bm25.get_scores(query_tokens)
         ranked = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)
         results = []
         for i in ranked[:top_k]:
-            if scores[i] > 0:
+            if scores[i] >= min_score:
                 chunk = self._chunks[i]
                 results.append(f"[{chunk['source']}]\n{chunk['text']}")
         return results

@@ -24,10 +24,17 @@ def chat(
     else:
         full_prompt = system_prompt
 
+    num_ctx     = int(os.getenv("OLLAMA_NUM_CTX", "8192"))
+    num_predict = int(os.getenv("OLLAMA_NUM_PREDICT", "-1"))
+
     client = ollama.Client(host=host)
     messages: list[dict[str, str]] = [{"role": "system", "content": full_prompt}]
     messages.extend(history)
     messages.append({"role": "user", "content": user_message})
 
-    response = client.chat(model=model, messages=messages)
+    response = client.chat(
+        model=model,
+        messages=messages,
+        options={"num_ctx": num_ctx, "num_predict": num_predict},
+    )
     return response.message.content

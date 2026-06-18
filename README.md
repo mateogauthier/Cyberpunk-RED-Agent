@@ -24,10 +24,20 @@ Follow these steps to get the project up and running.
     python3 -m venv venv
     source venv/bin/activate
     ```
-3.  Install necessary dependencies (to be listed here later):
+3.  Install dependencies:
     ```bash
-    pip install -r requirements.txt
+    pip install -r code/requirements.txt
     ```
+4.  Create a `.env` file in the project root:
+    ```env
+    OLLAMA_HOST=http://localhost:11434
+    OLLAMA_MODEL=llama3.2
+    ```
+5.  Start the API server:
+    ```bash
+    uvicorn code.api_server:app --reload
+    ```
+    Interactive docs available at `http://localhost:8000/docs`.
 
 ## 🤖 Project Structure
 

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AGENT // SAAI INTERFACE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:         #060007;
+      --bg-panel:   #0d000f;
+      --bg-input:   #110015;
+      --red:        #ff2a00;
+      --red-mid:    #cc2200;
+      --red-dark:   #3a0500;
+      --cyan:       #00ddff;
+      --cyan-dark:  #003344;
+      --text:       #d0c8d8;
+      --text-dim:   #4a3858;
+      --border:     #250035;
+      --glow-red:   0 0 6px #ff2a00, 0 0 20px rgba(255,42,0,0.35);
+      --glow-cyan:  0 0 6px #00ddff, 0 0 20px rgba(0,221,255,0.3);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      overflow: hidden;
+    }
+
+    /* Scanlines */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px, transparent 3px,
+        rgba(0,0,0,0.12) 3px, rgba(0,0,0,0.12) 4px
+      );
+      pointer-events: none;
+      z-index: 900;
+    }
+
+    /* Vignette */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.75) 100%);
+      pointer-events: none;
+      z-index: 901;
+    }
+
+    /* ── LAYOUT ── */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0 10px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-diamond {
+      color: var(--red);
+      font-size: 22px;
+      text-shadow: var(--glow-red);
+      animation: pulse-red 3s ease-in-out infinite;
+    }
+
+    .logo-title {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 20px;
+      letter-spacing: 6px;
+      color: var(--red);
+      text-shadow: var(--glow-red);
+      animation: glitch 8s infinite;
+      position: relative;
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .saai-tag {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      padding: 2px 7px;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--cyan);
+      text-shadow: var(--glow-cyan);
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: var(--glow-cyan);
+      animation: blink 2s step-end infinite;
+    }
+
+    /* ── DECORATIVE BAR ── */
+    .deck-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .deck-bar span {
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    .deck-bar .bar-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, var(--border), transparent);
+    }
+
+    /* ── MESSAGES ── */
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--red-dark) transparent;
+    }
+
+    #messages::-webkit-scrollbar { width: 4px; }
+    #messages::-webkit-scrollbar-thumb { background: var(--red-dark); }
+
+    /* system line */
+    .msg-system {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      animation: fadein 0.3s ease;
+    }
+
+    /* agent message */
+    .msg-agent {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-self: flex-start;
+      max-width: 82%;
+      animation: slidein-left 0.25s ease;
+    }
+
+    .msg-agent .label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--red);
+      text-shadow: var(--glow-red);
+    }
+
+    .msg-agent .bubble {
+      background: var(--bg-panel);
+      border: 1px solid var(--red-dark);
+      border-left: 2px solid var(--red);
+      padding: 10px 14px;
+      color: var(--text);
+      line-height: 1.6;
+      white-space: pre-wrap;
+      box-shadow: inset 0 0 30px rgba(255,42,0,0.03);
+    }
+
+    /* user message */
+    .msg-user {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      align-self: flex-end;
+      max-width: 75%;
+      animation: slidein-right 0.25s ease;
+    }
+
+    .msg-user .label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--cyan);
+      text-shadow: var(--glow-cyan);
+      text-align: right;
+    }
+
+    .msg-user .bubble {
+      background: var(--cyan-dark);
+      border: 1px solid rgba(0,221,255,0.2);
+      border-right: 2px solid var(--cyan);
+      padding: 10px 14px;
+      color: #e8f8ff;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      box-shadow: inset 0 0 30px rgba(0,221,255,0.04);
+    }
+
+    /* typing indicator */
+    #typing {
+      display: none;
+      align-self: flex-start;
+      padding: 10px 14px;
+      background: var(--bg-panel);
+      border: 1px solid var(--red-dark);
+      border-left: 2px solid var(--red);
+    }
+
+    #typing.visible { display: block; }
+
+    .typing-dots span {
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      margin: 0 2px;
+      background: var(--red);
+      border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    /* ── INPUT BAR ── */
+    .input-wrapper {
+      flex-shrink: 0;
+      padding: 12px 0 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-row:focus-within {
+      border-color: var(--red-mid);
+      box-shadow: var(--glow-red);
+    }
+
+    .prompt-sym {
+      color: var(--red);
+      text-shadow: var(--glow-red);
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+
+    #user-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      caret-color: var(--red);
+    }
+
+    #user-input::placeholder { color: var(--text-dim); }
+    #user-input:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    #send-btn {
+      background: transparent;
+      border: 1px solid var(--red-mid);
+      color: var(--red);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      padding: 6px 14px;
+      cursor: pointer;
+      text-shadow: var(--glow-red);
+      transition: background 0.15s, box-shadow 0.15s;
+      flex-shrink: 0;
+    }
+
+    #send-btn:hover:not(:disabled) {
+      background: var(--red-dark);
+      box-shadow: var(--glow-red);
+    }
+
+    #send-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .input-hint {
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      margin-top: 6px;
+      padding-left: 2px;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadein {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    @keyframes slidein-left {
+      from { opacity: 0; transform: translateX(-10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes slidein-right {
+      from { opacity: 0; transform: translateX(10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+
+    @keyframes pulse-red {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.6; }
+    }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); opacity: 0.4; }
+      40%            { transform: scale(1);   opacity: 1;   }
+    }
+
+    @keyframes glitch {
+      0%, 92%, 100% { text-shadow: var(--glow-red); transform: none; }
+      93%   { text-shadow: 2px 0 var(--cyan), -2px 0 var(--red); transform: skewX(-1deg); }
+      94%   { text-shadow: -2px 0 var(--cyan), 2px 0 var(--red); transform: skewX(1deg);  }
+      95%   { text-shadow: var(--glow-red); transform: none; }
+      96%   { text-shadow: 2px 0 var(--cyan), -2px 0 var(--red); transform: translateX(2px); }
+      97%   { text-shadow: var(--glow-red); transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="header-left">
+        <span class="logo-diamond">◈</span>
+        <span class="logo-title">A G E N T</span>
+      </div>
+      <div class="header-meta">
+        <span class="saai-tag">SAAI v4.1</span>
+        <div class="status-indicator">
+          <span class="status-dot"></span>
+          <span>ONLINE</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="deck-bar">
+      <span>DATA POOL</span>
+      <div class="bar-line"></div>
+      <span>WORLDSAT</span>
+      <div class="bar-line"></div>
+      <span>NET LINK</span>
+      <div class="bar-line"></div>
+      <span>SECURE CHANNEL</span>
+    </div>
+
+    <div id="messages">
+      <div id="typing">
+        <div class="typing-dots">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-wrapper">
+      <div class="input-row">
+        <span class="prompt-sym">▶</span>
+        <input
+          id="user-input"
+          type="text"
+          placeholder="TRANSMIT TO AGENT..."
+          autocomplete="off"
+          disabled
+        />
+        <button id="send-btn" disabled>SEND</button>
+      </div>
+      <div class="input-hint">[ ENTER ] TO TRANSMIT</div>
+    </div>
+  </div>
+
+  <script>
+    const messagesEl = document.getElementById('messages');
+    const inputEl    = document.getElementById('user-input');
+    const sendBtn    = document.getElementById('send-btn');
+    const typingEl   = document.getElementById('typing');
+
+    const history = [];
+
+    // ── RENDER HELPERS ──────────────────────────────────────────
+
+    function renderSystem(text) {
+      const el = document.createElement('div');
+      el.className = 'msg-system';
+      el.textContent = text;
+      messagesEl.insertBefore(el, typingEl);
+      scrollBottom();
+    }
+
+    function renderAgent(text) {
+      const wrap = document.createElement('div');
+      wrap.className = 'msg-agent';
+      wrap.innerHTML = `
+        <div class="label">◈ AGENT</div>
+        <div class="bubble">${escHtml(text)}</div>
+      `;
+      messagesEl.insertBefore(wrap, typingEl);
+      scrollBottom();
+    }
+
+    function renderUser(text) {
+      const wrap = document.createElement('div');
+      wrap.className = 'msg-user';
+      wrap.innerHTML = `
+        <div class="label">YOU ▶</div>
+        <div class="bubble">${escHtml(text)}</div>
+      `;
+      messagesEl.insertBefore(wrap, typingEl);
+      scrollBottom();
+    }
+
+    function showTyping()  { typingEl.classList.add('visible');    scrollBottom(); }
+    function hideTyping()  { typingEl.classList.remove('visible'); }
+    function scrollBottom(){ messagesEl.scrollTop = messagesEl.scrollHeight; }
+    function escHtml(s)    { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function delay(ms)     { return new Promise(r => setTimeout(r, ms)); }
+
+    function setInputEnabled(enabled) {
+      inputEl.disabled = !enabled;
+      sendBtn.disabled = !enabled;
+      if (enabled) inputEl.focus();
+    }
+
+    // ── SEND ────────────────────────────────────────────────────
+
+    async function sendMessage() {
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      inputEl.value = '';
+      setInputEnabled(false);
+
+      const outgoingHistory = [...history];
+      history.push({ role: 'user', content: text });
+      renderUser(text);
+      showTyping();
+
+      try {
+        const res  = await fetch('/chat', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({ message: text, history: outgoingHistory }),
+        });
+        const data = await res.json();
+        hideTyping();
+
+        if (!res.ok) {
+          renderSystem(`⚠ SIGNAL ERROR: ${data.detail ?? res.statusText}`);
+          history.pop();
+        } else {
+          history.push({ role: 'assistant', content: data.response });
+          renderAgent(data.response);
+        }
+      } catch (err) {
+        hideTyping();
+        renderSystem(`⚠ CONNECTION LOST: ${err.message}`);
+        history.pop();
+      }
+
+      setInputEnabled(true);
+    }
+
+    // ── BOOT SEQUENCE ───────────────────────────────────────────
+
+    const BOOT_LINES = [
+      { type: 'system', text: '[ INITIALIZING SAAI CORE... ]' },
+      { type: 'system', text: '[ LOADING PERSONALITY MATRIX... ]' },
+      { type: 'system', text: '[ CONNECTING TO WORLDSAT NETWORK... ]' },
+      { type: 'system', text: '[ DATA POOL ACCESS: ESTABLISHED ]' },
+      { type: 'system', text: '[ AGENT INTERFACE READY ]' },
+    ];
+
+    async function boot() {
+      for (const line of BOOT_LINES) {
+        await delay(380);
+        renderSystem(line.text);
+      }
+      await delay(500);
+
+      // Opening message from the Agent (not in history — system-initiated)
+      showTyping();
+      await delay(900);
+      hideTyping();
+
+      const opening = "Agent online. I'm your dedicated SAAI interface — your link to the Data Pool, WorldSat comms, and everything the Night City grid can pull. State your query.";
+      history.push({ role: 'assistant', content: opening });
+      renderAgent(opening);
+
+      setInputEnabled(true);
+    }
+
+    // ── EVENT LISTENERS ─────────────────────────────────────────
+
+    sendBtn.addEventListener('click', sendMessage);
+    inputEl.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+
+    boot();
+  </script>
+</body>
+</html>

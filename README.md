@@ -1,25 +1,20 @@
 # Cyberpunk RED Agent Chatbot
 
-This project aims to create a chatbot simulating an Agent from the Cyberpunk RED TTRPG universe. The goal is to develop an interactive AI experience that embodies the tone, jargon, and moral ambiguity of the genre.
+An interactive chatbot that simulates an **Agent** from the Cyberpunk RED TTRPG universe — a pocket-sized personal computer powered by SAAI (Self-Adaptive Artificial Intelligence). The Agent responds in the tone and language of the setting, and its personality adapts over the course of a conversation. You can feed it your own lore files so it answers based on actual Cyberpunk RED canon.
 
-## 🚀 Getting Started
-
-Follow these steps to get the project up and running.
-
-### Prerequisites
+## Prerequisites
 
 *   Python 3.8+
-*   `pip`
-*   A conceptual understanding of Cyberpunk RED lore.
+*   [Ollama](https://ollama.com) running locally with at least one model pulled (e.g. `ollama pull llama3.2`)
 
-### Installation
+## Installation
 
 1.  Clone the repository:
     ```bash
     git clone <repository-url>
     cd cyberpunk-agent-bot
     ```
-2.  Set up a virtual environment (recommended):
+2.  Create and activate a virtual environment:
     ```bash
     python3 -m venv venv
     source venv/bin/activate
@@ -33,32 +28,71 @@ Follow these steps to get the project up and running.
     OLLAMA_HOST=http://localhost:11434
     OLLAMA_MODEL=llama3.2
     ```
-5.  Start the API server:
-    ```bash
-    uvicorn code.api_server:app --reload
-    ```
-    Interactive docs available at `http://localhost:8000/docs`.
+    Change `OLLAMA_MODEL` to whichever model you have pulled in Ollama.
 
-## 🤖 Project Structure
+## Running
 
-The core logic, character definitions, and interaction scripts will reside in the following structure:
+```bash
+source venv/bin/activate
+uvicorn code.api_server:app --port 8000 --reload
+```
 
-*   `agents.md`: Detailed profiles and background lore for potential agents/personas.
-*   `specifications.md`: The operational guidelines, conversational rules, and technical constraints for the chatbot.
-*   `main.py`: The primary entry point for the chatbot interface.
-*   `utils/`: Helper functions, character asset storage, lore databases, etc.
+Open `http://localhost:8000` in your browser. The chat interface loads automatically.
 
-## ✨ Goals
+API docs are available at `http://localhost:8000/docs`.
 
-*   **Immersion:** Generate responses that feel authentic to the setting (corporate paranoia, street-level grit, chrome, etc.).
-*   **Roleplay Accuracy:** Maintain a consistent persona based on the chosen Agent profile.
-*   **Expandability:** Allow for easy addition of new lore, mechanics, and character archetypes.
+## Lore Folder
 
-## 💡 Initial Tasks
+The `lore/` folder is where you put your own Cyberpunk RED source material. The Agent will read it and use it to inform its answers.
 
-1.  Define core lore parameters in `specifications.md`.
-2.  Populate character profiles in `agents.md`.
-3.  Build the initial conversational wrapper in `main.py`.
+**Supported formats:** `.txt`, `.md`, `.pdf`
+
+**How it works:** On startup, all files in `lore/` are loaded, chunked, and indexed using BM25 keyword search. When you send a message, the most relevant excerpts are retrieved and injected into the Agent's context before it generates a response. The Agent uses that context to give lore-accurate answers without quoting it verbatim.
+
+**To add or update lore files** without restarting the server, call:
+```
+POST http://localhost:8000/lore/reload
+```
+
+**Note:** The `lore/` folder is excluded from version control. Files you place there will never be committed or pushed.
+
+## Project Structure
+
+```
+code/
+  api_server.py   — FastAPI backend (chat endpoint, lore reload, static file serving)
+  agent.py        — SAAI system prompt (defines the Agent's identity and capabilities)
+  llm.py          — Ollama client wrapper
+  rag.py          — Document loading, chunking, and BM25 retrieval
+  requirements.txt
+frontend/
+  index.html      — Cyberpunk RED styled chat interface (served at /)
+lore/             — Drop your lore files here (gitignored)
+specifications.md — Cyberpunk RED Agent lore reference used during development
+```
+
+## API Endpoints
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/` | Chat interface (browser) |
+| `GET` | `/status` | Server status and lore chunk count |
+| `POST` | `/chat` | Send a message to the Agent |
+| `POST` | `/lore/reload` | Reload lore files without restarting |
+
+### `/chat` request body
+
+```json
+{
+  "message": "Tell me about Night City.",
+  "history": [
+    { "role": "user", "content": "..." },
+    { "role": "assistant", "content": "..." }
+  ]
+}
+```
+
+`history` is optional. The client is responsible for maintaining conversation history and passing it back with each request.
 
 ---
 *Developed with a healthy dose of Black ICE and bad decisions.*

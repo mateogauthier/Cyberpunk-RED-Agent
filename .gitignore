@@ -16,6 +16,10 @@ env/
 .vscode/
 *.swp
 
-#env files
+# Env files
 .env
 *.env
+
+# Lore files — keep the folder tracked but not its contents (copyright)
+lore/*
+!lore/.gitkeep

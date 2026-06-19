@@ -31,11 +31,15 @@
         <span class="bar-sep">◈</span>
         <button class="tab-btn" data-tab="news">NIGHT CITY NET</button>
         <span class="bar-sep">◈</span>
+        <button class="tab-btn" data-tab="market">NIGHT MARKETS</button>
+        <span class="bar-sep">◈</span>
         <button class="tab-btn" data-tab="profile">EDGERUNNER FILE</button>
         <span class="bar-sep">◈</span>
         <button class="tab-btn active" data-tab="chat">COMM LINK</button>
         <span class="bar-sep">◈</span>
         <button class="tab-btn" data-tab="news">NIGHT CITY NET</button>
+        <span class="bar-sep">◈</span>
+        <button class="tab-btn" data-tab="market">NIGHT MARKETS</button>
         <span class="bar-sep">◈</span>
         <button class="tab-btn" data-tab="profile">EDGERUNNER FILE</button>
         <span class="bar-sep">◈</span>
@@ -78,6 +82,17 @@
       </div>
     </div>
 
+    <!-- ── NIGHT MARKETS ── -->
+    <div id="panel-market" class="tab-panel">
+      <div class="market-toolbar">
+        <button id="scout-market-btn" class="market-gen-btn">◈ SCOUT MARKETS</button>
+        <span class="market-status" id="market-status"></span>
+      </div>
+      <div id="market-feed" class="market-feed">
+        <div class="market-empty-state">// NO ACTIVE LISTINGS — CONTACT YOUR FIXER //</div>
+      </div>
+    </div>
+
     <!-- ── PROFILE ── -->
     <div id="panel-profile" class="tab-panel">
       <div class="profile-container">
@@ -86,13 +101,13 @@
           <div class="profile-layout">
 
             <div class="profile-avatar-area">
-              <div class="profile-avatar">
+              <div class="profile-avatar" id="profile-avatar" role="button" tabindex="0" aria-label="Set avatar image">
                 <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" class="silhouette-svg" aria-hidden="true">
                   <ellipse cx="50" cy="30" rx="20" ry="22"/>
                   <path d="M10 120 Q10 80 30 72 Q40 68 50 68 Q60 68 70 72 Q90 80 90 120Z"/>
                 </svg>
               </div>
-              <div class="avatar-label">[ NO IMAGE ON FILE ]</div>
+              <div class="avatar-label" id="avatar-label">[ CLICK TO SET IMAGE ]</div>
             </div>
 
             <div class="profile-fields">

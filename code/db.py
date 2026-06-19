@@ -21,7 +21,25 @@ def init_db() -> None:
                 bio    TEXT NOT NULL DEFAULT ''
             )
         """)
+        try:
+            conn.execute("ALTER TABLE profile ADD COLUMN avatar_url TEXT NOT NULL DEFAULT ''")
+        except Exception:
+            pass  # column already exists
         conn.execute("INSERT OR IGNORE INTO profile (id) VALUES (1)")
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS market_items (
+                id          INTEGER PRIMARY KEY AUTOINCREMENT,
+                name        TEXT NOT NULL,
+                category    TEXT NOT NULL,
+                description TEXT NOT NULL,
+                price       INTEGER NOT NULL,
+                seller      TEXT NOT NULL,
+                district    TEXT NOT NULL,
+                rarity      TEXT NOT NULL DEFAULT 'COMMON',
+                condition   TEXT NOT NULL DEFAULT 'USED',
+                created_at  TEXT NOT NULL DEFAULT (datetime('now'))
+            )
+        """)
         conn.execute("""
             CREATE TABLE IF NOT EXISTS news (
                 id         INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -22,6 +22,31 @@ SYSTEM_PROMPT = (
     "never dump everything upfront. The user can ask for more."
 )
 
+MARKET_PROMPT = (
+    "You are a black market listings generator for the Night Markets of Night City in the Cyberpunk RED universe (year 2045). "
+    "Generate a single item currently for sale through a fixer network. "
+    "Items span: military hardware, cyberware implants, hot vehicles, stolen corporate data, "
+    "assassin services, pharmaceutical contraband, experimental tech, black-market medtech.\n\n"
+    "Respond ONLY with a raw JSON object — no markdown, no code fences, no preamble. "
+    "The JSON must have exactly these keys:\n"
+    "- \"name\": string, item name (max 8 words, cyberpunk flavor)\n"
+    "- \"category\": string, exactly one of: WEAPONS, VEHICLES, CYBERWARE, DATA, SERVICES, CONTRABAND, TECH, MEDTECH\n"
+    "- \"description\": string, 2–3 sentences of gritty street-level flavor. Mention the item's origin, quirks, or provenance.\n"
+    "- \"price\": integer, price in eurodollars (whole number, no symbols)\n"
+    "- \"seller\": string, fixer alias (short, cyberpunk street name, max 3 words)\n"
+    "- \"district\": string, exactly one of: CITY CENTER, WATSON, WESTBROOK, HEYWOOD, PACIFICA, SANTO DOMINGO, BADLANDS\n"
+    "- \"rarity\": string, exactly one of: COMMON, UNCOMMON, RARE, LEGENDARY\n"
+    "- \"condition\": string, exactly one of: NEW, USED, HOT, SALVAGE\n\n"
+    "Price guidance (eurodollars):\n"
+    "WEAPONS: 200–8000 | VEHICLES: 5000–90000 | CYBERWARE: 500–20000 | DATA: 100–15000 | "
+    "SERVICES: 500–25000 | CONTRABAND: 50–5000 | TECH: 200–10000 | MEDTECH: 50–3000\n"
+    "LEGENDARY items command 3–5× COMMON price. HOT (stolen) items run 20–40% below market.\n\n"
+    "Lore constraints — active corporations: Militech, Petrochem, Night Corp, Ziggurat. "
+    "Active gangs: Maelstrom, Tyger Claws, Valentinos, Animals, 6th Street, Voodoo Boys. "
+    "Arasaka was expelled from Night City in 2023 — do not reference them as a present force. "
+    "Vary item types and categories — do not repeat patterns from previous listings."
+)
+
 NEWS_PROMPT = (
     "You are a newsfeed generator for the Night City Net, the public information network "
     "of Night City in the Cyberpunk RED universe. Generate a single breaking news article "

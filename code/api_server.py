@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-from .agent import SYSTEM_PROMPT, NEWS_PROMPT
+from .agent import SYSTEM_PROMPT, NEWS_PROMPT, MARKET_PROMPT
 from .db import init_db, get_connection
 from .llm import chat as llm_chat
 from .rag import index as lore_index
@@ -60,10 +60,23 @@ class NewsResponse(BaseModel):
     created_at: str | None = None
 
 
+class MarketItem(BaseModel):
+    name: str
+    category: str
+    description: str
+    price: int
+    seller: str
+    district: str
+    rarity: str = "COMMON"
+    condition: str = "USED"
+    created_at: str | None = None
+
+
 class ProfileModel(BaseModel):
     handle: str = ""
     role: str = ""
     bio: str = ""
+    avatar_url: str = ""
 
 
 @app.get("/status")
@@ -86,9 +99,29 @@ def reload_lore():
 def chat(req: ChatRequest):
     history = [{"role": m.role, "content": m.content} for m in req.history]
     context = lore_index.retrieve(req.message)
+
+    system_prompt = SYSTEM_PROMPT
+    with get_connection() as conn:
+        row = conn.execute("SELECT handle, role, bio FROM profile WHERE id = 1").fetchone()
+    if row and row["handle"]:
+        lines = [
+            "## OPERATOR ON FILE",
+            f"This Agent is registered to: {row['handle']}",
+        ]
+        if row["role"]:
+            lines.append(f"Profession: {row['role']}")
+        if row["bio"]:
+            lines.append(f"Background: {row['bio']}")
+        lines.append(
+            "You already have this operator's file. "
+            "Address them by their handle. "
+            "Never ask them for identification or credentials — you know who they are."
+        )
+        system_prompt = SYSTEM_PROMPT + "\n\n" + "\n".join(lines)
+
     try:
         response = llm_chat(
-            system_prompt=SYSTEM_PROMPT,
+            system_prompt=system_prompt,
             history=history,
             user_message=req.message,
             context_chunks=context,
@@ -162,19 +195,79 @@ def generate_news():
     return article
 
 
+@app.get("/market", response_model=list[MarketItem])
+def get_market():
+    with get_connection() as conn:
+        rows = conn.execute(
+            "SELECT name, category, description, price, seller, district, rarity, condition, created_at "
+            "FROM market_items ORDER BY created_at DESC LIMIT 20"
+        ).fetchall()
+    return [MarketItem(**dict(r)) for r in rows]
+
+
+@app.post("/market", response_model=MarketItem)
+def generate_market_item():
+    try:
+        raw = llm_chat(
+            system_prompt=MARKET_PROMPT,
+            history=[],
+            user_message="Generate a new black market listing for the Night Markets right now.",
+            context_chunks=None,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"LLM error: {e}")
+
+    text = raw.strip()
+    if text.startswith("```"):
+        text = text.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+    text = _fix_json_escapes(text)
+
+    try:
+        data = _json.loads(text)
+    except _json.JSONDecodeError as e:
+        raise HTTPException(status_code=502, detail=f"LLM returned invalid JSON: {e}")
+
+    item = MarketItem(
+        name=data.get("name", "UNKNOWN ITEM"),
+        category=data.get("category", "TECH"),
+        description=data.get("description", ""),
+        price=int(data.get("price", 0)),
+        seller=data.get("seller", "ANONYMOUS"),
+        district=data.get("district", "NIGHT CITY"),
+        rarity=data.get("rarity", "COMMON"),
+        condition=data.get("condition", "USED"),
+    )
+
+    with get_connection() as conn:
+        conn.execute(
+            "INSERT INTO market_items (name, category, description, price, seller, district, rarity, condition) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (item.name, item.category, item.description, item.price,
+             item.seller, item.district, item.rarity, item.condition),
+        )
+        conn.execute("""
+            DELETE FROM market_items WHERE id NOT IN (
+                SELECT id FROM market_items ORDER BY created_at DESC LIMIT 20
+            )
+        """)
+        conn.commit()
+
+    return item
+
+
 @app.get("/profile", response_model=ProfileModel)
 def get_profile():
     with get_connection() as conn:
-        row = conn.execute("SELECT handle, role, bio FROM profile WHERE id = 1").fetchone()
-    return ProfileModel(handle=row["handle"], role=row["role"], bio=row["bio"])
+        row = conn.execute("SELECT handle, role, bio, avatar_url FROM profile WHERE id = 1").fetchone()
+    return ProfileModel(handle=row["handle"], role=row["role"], bio=row["bio"], avatar_url=row["avatar_url"])
 
 
 @app.post("/profile", response_model=ProfileModel)
 def save_profile(profile: ProfileModel):
     with get_connection() as conn:
         conn.execute(
-            "UPDATE profile SET handle = ?, role = ?, bio = ? WHERE id = 1",
-            (profile.handle, profile.role, profile.bio),
+            "UPDATE profile SET handle = ?, role = ?, bio = ?, avatar_url = ? WHERE id = 1",
+            (profile.handle, profile.role, profile.bio, profile.avatar_url),
         )
         conn.commit()
     return profile

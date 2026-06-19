@@ -5,7 +5,9 @@ export const chatRequest  = (message, history) =>
 
 export const fetchNews    = () => fetch('/news');
 export const generateNews = () => fetch('/news', { method: 'POST' });
-export const fetchProfile = () => fetch('/profile');
+export const fetchMarket    = () => fetch('/market');
+export const generateMarket = () => fetch('/market', { method: 'POST' });
+export const fetchProfile   = () => fetch('/profile');
 
 export const saveProfile  = profile =>
   fetch('/profile', { method: 'POST', headers: HEADERS, body: JSON.stringify(profile) });

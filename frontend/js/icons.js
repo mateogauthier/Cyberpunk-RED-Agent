@@ -1,3 +1,135 @@
+export const MARKET_ICONS = {
+
+  WEAPONS: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="market-cat-icon" aria-hidden="true">
+    <circle cx="40" cy="40" r="30" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="40" cy="40" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="40" cy="40" r="2.5" fill="currentColor"/>
+    <line x1="40" y1="10" x2="40" y2="30" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="40" y1="50" x2="40" y2="70" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="10" y1="40" x2="30" y2="40" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="50" y1="40" x2="70" y2="40" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="18" y1="18" x2="24" y2="24" stroke="currentColor" stroke-width="1"/>
+    <line x1="62" y1="18" x2="56" y2="24" stroke="currentColor" stroke-width="1"/>
+    <line x1="18" y1="62" x2="24" y2="56" stroke="currentColor" stroke-width="1"/>
+    <line x1="62" y1="62" x2="56" y2="56" stroke="currentColor" stroke-width="1"/>
+    <rect x="38" y="6" width="4" height="4" fill="currentColor" opacity="0.6"/>
+    <rect x="38" y="70" width="4" height="4" fill="currentColor" opacity="0.6"/>
+    <rect x="6" y="38" width="4" height="4" fill="currentColor" opacity="0.6"/>
+    <rect x="70" y="38" width="4" height="4" fill="currentColor" opacity="0.6"/>
+  </svg>`,
+
+  VEHICLES: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="market-cat-icon" aria-hidden="true">
+    <path d="M6 52 L6 44 L22 30 L58 30 L74 44 L74 52 Z" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M24 44 L30 34 L50 34 L56 44" fill="none" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+    <circle cx="20" cy="52" r="11" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="20" cy="52" r="5"  fill="currentColor" opacity="0.45"/>
+    <circle cx="60" cy="52" r="11" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="60" cy="52" r="5"  fill="currentColor" opacity="0.45"/>
+    <line x1="34" y1="34" x2="34" y2="44" stroke="currentColor" stroke-width="0.8" opacity="0.45"/>
+    <line x1="46" y1="34" x2="46" y2="44" stroke="currentColor" stroke-width="0.8" opacity="0.45"/>
+    <rect x="6" y="44" width="8" height="4" fill="currentColor" opacity="0.55"/>
+    <rect x="66" y="44" width="8" height="4" fill="currentColor" opacity="0.55"/>
+    <line x1="2" y1="42" x2="10" y2="42" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+    <line x1="2" y1="47" x2="8"  y2="47" stroke="currentColor" stroke-width="1" opacity="0.2"/>
+  </svg>`,
+
+  CYBERWARE: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="market-cat-icon" aria-hidden="true">
+    <polygon points="40,6 60,17 60,39 40,50 20,39 20,17" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="40" cy="28" r="9"  fill="none" stroke="currentColor" stroke-width="1.2"/>
+    <circle cx="40" cy="28" r="3.5" fill="currentColor"/>
+    <line x1="40" y1="50" x2="40" y2="64" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="20" y1="39" x2="8"  y2="56" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="60" y1="39" x2="72" y2="56" stroke="currentColor" stroke-width="1.5"/>
+    <rect x="36" y="64" width="8" height="7" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    <rect x="2"  y="56" width="7" height="9" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    <rect x="71" y="56" width="7" height="9" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="40" y1="6"  x2="34" y2="0"  stroke="currentColor" stroke-width="1"/>
+    <line x1="40" y1="6"  x2="46" y2="0"  stroke="currentColor" stroke-width="1"/>
+    <rect x="29" y="-1" width="8" height="3" fill="currentColor" opacity="0.55"/>
+    <rect x="43" y="-1" width="8" height="3" fill="currentColor" opacity="0.55"/>
+  </svg>`,
+
+  DATA: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="market-cat-icon" aria-hidden="true">
+    <ellipse cx="40" cy="18" rx="26" ry="8" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="14" y1="18" x2="14" y2="42" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="66" y1="18" x2="66" y2="42" stroke="currentColor" stroke-width="1.5"/>
+    <ellipse cx="40" cy="42" rx="26" ry="8" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M14 30 Q40 36 66 30" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.4"/>
+    <line x1="24" y1="18" x2="56" y2="18" stroke="currentColor" stroke-width="0.8" opacity="0.35"/>
+    <rect x="31" y="56" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M32 56 L32 51 Q40 44 48 51 L48 56" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="40" cy="64" r="2.5" fill="currentColor"/>
+    <line x1="40" y1="66" x2="40" y2="69" stroke="currentColor" stroke-width="1.2"/>
+  </svg>`,
+
+  SERVICES: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="market-cat-icon" aria-hidden="true">
+    <polygon points="40,4 76,40 40,76 4,40" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <polygon points="40,14 66,40 40,66 14,40" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.25"/>
+    <circle cx="40" cy="33" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="40" cy="33" r="4"  fill="currentColor" opacity="0.55"/>
+    <path d="M34 40 L34 56 L46 56 L46 40" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="34" y1="48" x2="46" y2="48" stroke="currentColor" stroke-width="0.9" opacity="0.5"/>
+    <line x1="40" y1="40" x2="40" y2="56" stroke="currentColor" stroke-width="0.9" opacity="0.5"/>
+  </svg>`,
+
+  CONTRABAND: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="market-cat-icon" aria-hidden="true">
+    <polygon points="40,4 76,70 4,70" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <polygon points="40,14 68,66 12,66" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.25"/>
+    <ellipse cx="40" cy="38" rx="10" ry="11" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    <ellipse cx="35" cy="37" rx="3" ry="3.5" fill="currentColor" opacity="0.6"/>
+    <ellipse cx="45" cy="37" rx="3" ry="3.5" fill="currentColor" opacity="0.6"/>
+    <path d="M36 47 L36 52 L44 52 L44 47" fill="none" stroke="currentColor" stroke-width="1"/>
+    <line x1="36" y1="49.5" x2="44" y2="49.5" stroke="currentColor" stroke-width="0.8" opacity="0.5"/>
+    <line x1="40" y1="47" x2="40" y2="52" stroke="currentColor" stroke-width="0.8" opacity="0.5"/>
+    <line x1="40" y1="56" x2="40" y2="61" stroke="currentColor" stroke-width="2"/>
+    <circle cx="40" cy="64" r="2" fill="currentColor"/>
+  </svg>`,
+
+  TECH: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="market-cat-icon" aria-hidden="true">
+    <rect x="20" y="20" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="28" y1="20" x2="28" y2="60" stroke="currentColor" stroke-width="0.7" opacity="0.3"/>
+    <line x1="40" y1="20" x2="40" y2="60" stroke="currentColor" stroke-width="0.7" opacity="0.3"/>
+    <line x1="52" y1="20" x2="52" y2="60" stroke="currentColor" stroke-width="0.7" opacity="0.3"/>
+    <line x1="20" y1="28" x2="60" y2="28" stroke="currentColor" stroke-width="0.7" opacity="0.3"/>
+    <line x1="20" y1="40" x2="60" y2="40" stroke="currentColor" stroke-width="0.7" opacity="0.3"/>
+    <line x1="20" y1="52" x2="60" y2="52" stroke="currentColor" stroke-width="0.7" opacity="0.3"/>
+    <rect x="30" y="30" width="20" height="20" fill="currentColor" opacity="0.18"/>
+    <rect x="33" y="33" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1"/>
+    <line x1="26" y1="20" x2="26" y2="12" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="34" y1="20" x2="34" y2="12" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="46" y1="20" x2="46" y2="12" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="54" y1="20" x2="54" y2="12" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="26" y1="60" x2="26" y2="68" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="34" y1="60" x2="34" y2="68" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="46" y1="60" x2="46" y2="68" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="54" y1="60" x2="54" y2="68" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="20" y1="26" x2="12" y2="26" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="20" y1="34" x2="12" y2="34" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="20" y1="46" x2="12" y2="46" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="20" y1="54" x2="12" y2="54" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="60" y1="26" x2="68" y2="26" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="60" y1="34" x2="68" y2="34" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="60" y1="46" x2="68" y2="46" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="60" y1="54" x2="68" y2="54" stroke="currentColor" stroke-width="1.2"/>
+  </svg>`,
+
+  MEDTECH: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="market-cat-icon" aria-hidden="true">
+    <rect x="26" y="28" width="36" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M26 36 L10 36 L8 34 L8 38 L10 36" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="62" y1="36" x2="72" y2="36" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="72" y1="28" x2="72" y2="44" stroke="currentColor" stroke-width="2.5"/>
+    <line x1="32" y1="28" x2="32" y2="22" stroke="currentColor" stroke-width="1"/>
+    <line x1="40" y1="28" x2="40" y2="20" stroke="currentColor" stroke-width="1"/>
+    <line x1="48" y1="28" x2="48" y2="22" stroke="currentColor" stroke-width="1"/>
+    <line x1="56" y1="28" x2="56" y2="24" stroke="currentColor" stroke-width="1"/>
+    <rect x="28" y="30" width="18" height="12" fill="currentColor" opacity="0.18"/>
+    <line x1="16" y1="50" x2="16" y2="62" stroke="currentColor" stroke-width="2"/>
+    <line x1="10" y1="56" x2="22" y2="56" stroke="currentColor" stroke-width="2"/>
+    <circle cx="16" cy="56" r="10" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3"/>
+  </svg>`,
+
+};
+
 export const CATEGORY_ICONS = {
 
   CORPORATE: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="news-cat-icon" aria-hidden="true">

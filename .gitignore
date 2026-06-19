@@ -26,3 +26,6 @@ lore/*
 
 # Lore index cache (auto-generated from lore/)
 .lore_cache.pkl
+
+# SQLite database (runtime data)
+data/

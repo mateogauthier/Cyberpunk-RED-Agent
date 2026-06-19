@@ -27,50 +27,134 @@
     </header>
 
     <div class="deck-bar">
-      <div class="deck-track">
-        <span>DATA POOL</span>
+      <div class="deck-track" id="deck-track">
+        <button class="tab-btn active" data-tab="chat">COMM LINK</button>
         <span class="bar-sep">◈</span>
-        <span>ZIGGURAT CITINET</span>
+        <button class="tab-btn" data-tab="map">TACTICAL GRID</button>
         <span class="bar-sep">◈</span>
-        <span>THE GARDEN</span>
+        <button class="tab-btn" data-tab="news">NIGHT CITY NET</button>
         <span class="bar-sep">◈</span>
-        <span>SECURE CHANNEL</span>
+        <button class="tab-btn" data-tab="profile">EDGERUNNER FILE</button>
         <span class="bar-sep">◈</span>
-        <span>DATA POOL</span>
+        <button class="tab-btn active" data-tab="chat">COMM LINK</button>
         <span class="bar-sep">◈</span>
-        <span>ZIGGURAT CITINET</span>
+        <button class="tab-btn" data-tab="map">TACTICAL GRID</button>
         <span class="bar-sep">◈</span>
-        <span>THE GARDEN</span>
+        <button class="tab-btn" data-tab="news">NIGHT CITY NET</button>
         <span class="bar-sep">◈</span>
-        <span>SECURE CHANNEL</span>
+        <button class="tab-btn" data-tab="profile">EDGERUNNER FILE</button>
         <span class="bar-sep">◈</span>
       </div>
     </div>
 
-    <div id="messages">
-      <div id="typing">
-        <div class="typing-dots">
-          <span></span><span></span><span></span>
+    <!-- ── CHAT ───────────────────────────────────────────────────────────── -->
+    <div id="panel-chat" class="tab-panel active">
+      <div id="messages">
+        <div id="typing">
+          <div class="typing-dots">
+            <span></span><span></span><span></span>
+          </div>
         </div>
       </div>
+      <div class="input-wrapper">
+        <div class="input-row">
+          <span class="prompt-sym">▶</span>
+          <input
+            id="user-input"
+            type="text"
+            placeholder="TRANSMIT TO AGENT..."
+            autocomplete="off"
+            disabled
+          />
+          <button id="send-btn" disabled>SEND</button>
+        </div>
+        <div class="input-hint">[ ENTER ] TO TRANSMIT</div>
+      </div>
     </div>
 
-    <div class="input-wrapper">
-      <div class="input-row">
-        <span class="prompt-sym">▶</span>
-        <input
-          id="user-input"
-          type="text"
-          placeholder="TRANSMIT TO AGENT..."
-          autocomplete="off"
-          disabled
-        />
-        <button id="send-btn" disabled>SEND</button>
+    <!-- ── MAP ────────────────────────────────────────────────────────────── -->
+    <div id="panel-map" class="tab-panel">
+      <div id="map-legend"><!-- built by map.js --></div>
+    </div>
+
+    <!-- ── NEWS ───────────────────────────────────────────────────────────── -->
+    <div id="panel-news" class="tab-panel">
+      <div class="news-toolbar">
+        <button id="generate-news-btn" class="news-gen-btn">◈ UPDATE FEED</button>
+        <span class="news-status" id="news-status"></span>
       </div>
-      <div class="input-hint">[ ENTER ] TO TRANSMIT</div>
+      <div id="news-feed" class="news-feed">
+        <div class="news-empty-state">// NO ACTIVE FEED — JACK IN TO RETRIEVE //</div>
+      </div>
+    </div>
+
+    <!-- ── PROFILE ─────────────────────────────────────────────────────────── -->
+    <div id="panel-profile" class="tab-panel">
+      <div class="profile-container">
+        <div class="profile-header">◈ EDGERUNNER FILE ◈</div>
+        <form id="profile-form" class="profile-form">
+          <div class="profile-layout">
+
+            <div class="profile-avatar-area">
+              <div class="profile-avatar">
+                <svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" class="silhouette-svg" aria-hidden="true">
+                  <ellipse cx="50" cy="30" rx="20" ry="22"/>
+                  <path d="M10 120 Q10 80 30 72 Q40 68 50 68 Q60 68 70 72 Q90 80 90 120Z"/>
+                </svg>
+              </div>
+              <div class="avatar-label">[ NO IMAGE ON FILE ]</div>
+            </div>
+
+            <div class="profile-fields">
+              <div class="profile-field">
+                <label class="profile-label" for="profile-handle">HANDLE</label>
+                <div class="input-row">
+                  <span class="prompt-sym">▶</span>
+                  <input type="text" id="profile-handle" class="profile-input"
+                         placeholder="YOUR STREET NAME..." autocomplete="off" />
+                </div>
+              </div>
+              <div class="profile-field">
+                <label class="profile-label" for="profile-role">PROFESSION</label>
+                <div class="input-row">
+                  <span class="prompt-sym">▶</span>
+                  <select id="profile-role" class="profile-input profile-select">
+                    <option value="">SELECT ROLE...</option>
+                    <option value="Rockerboy">ROCKERBOY</option>
+                    <option value="Solo">SOLO</option>
+                    <option value="Netrunner">NETRUNNER</option>
+                    <option value="Tech">TECH</option>
+                    <option value="Medtech">MEDTECH</option>
+                    <option value="Media">MEDIA</option>
+                    <option value="Exec">EXEC</option>
+                    <option value="Lawman">LAWMAN</option>
+                    <option value="Fixer">FIXER</option>
+                    <option value="Nomad">NOMAD</option>
+                  </select>
+                </div>
+              </div>
+              <div class="profile-field profile-field--bio">
+                <label class="profile-label" for="profile-bio">BIO</label>
+                <div class="input-row input-row--textarea">
+                  <span class="prompt-sym">▶</span>
+                  <textarea id="profile-bio" class="profile-input profile-textarea"
+                            placeholder="YOUR STORY. WHERE YOU CAME FROM, WHAT YOU WANT, WHAT YOU'VE DONE..."
+                            rows="6"></textarea>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <button type="submit" id="profile-save-btn" class="profile-save-btn">
+            ◈ COMMIT TO RECORD ◈
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 
+  <script src="/news-icons.js"></script>
   <script src="/main.js"></script>
+  <script src="/map.js"></script>
 </body>
 </html>

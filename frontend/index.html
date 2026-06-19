@@ -7,8 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/style.css" />
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
   <div id="app">
@@ -30,15 +29,11 @@
       <div class="deck-track" id="deck-track">
         <button class="tab-btn active" data-tab="chat">COMM LINK</button>
         <span class="bar-sep">◈</span>
-        <button class="tab-btn" data-tab="map">TACTICAL GRID</button>
-        <span class="bar-sep">◈</span>
         <button class="tab-btn" data-tab="news">NIGHT CITY NET</button>
         <span class="bar-sep">◈</span>
         <button class="tab-btn" data-tab="profile">EDGERUNNER FILE</button>
         <span class="bar-sep">◈</span>
         <button class="tab-btn active" data-tab="chat">COMM LINK</button>
-        <span class="bar-sep">◈</span>
-        <button class="tab-btn" data-tab="map">TACTICAL GRID</button>
         <span class="bar-sep">◈</span>
         <button class="tab-btn" data-tab="news">NIGHT CITY NET</button>
         <span class="bar-sep">◈</span>
@@ -47,7 +42,7 @@
       </div>
     </div>
 
-    <!-- ── CHAT ───────────────────────────────────────────────────────────── -->
+    <!-- ── CHAT ── -->
     <div id="panel-chat" class="tab-panel active">
       <div id="messages">
         <div id="typing">
@@ -72,12 +67,7 @@
       </div>
     </div>
 
-    <!-- ── MAP ────────────────────────────────────────────────────────────── -->
-    <div id="panel-map" class="tab-panel">
-      <div id="map-legend"><!-- built by map.js --></div>
-    </div>
-
-    <!-- ── NEWS ───────────────────────────────────────────────────────────── -->
+    <!-- ── NEWS ── -->
     <div id="panel-news" class="tab-panel">
       <div class="news-toolbar">
         <button id="generate-news-btn" class="news-gen-btn">◈ UPDATE FEED</button>
@@ -88,7 +78,7 @@
       </div>
     </div>
 
-    <!-- ── PROFILE ─────────────────────────────────────────────────────────── -->
+    <!-- ── PROFILE ── -->
     <div id="panel-profile" class="tab-panel">
       <div class="profile-container">
         <div class="profile-header">◈ EDGERUNNER FILE ◈</div>
@@ -153,8 +143,7 @@
     </div>
   </div>
 
-  <script src="/news-icons.js"></script>
-  <script src="/main.js"></script>
-  <script src="/map.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script type="module" src="/js/app.js"></script>
 </body>
 </html>

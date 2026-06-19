@@ -1,8 +1,4 @@
-/* Category SVG icons for Night City Net news cards.
-   All use currentColor so CSS controls the tint.
-   ViewBox 80×80, stroke-based line art at 1.5px weight. */
-
-const CATEGORY_ICONS = {
+export const CATEGORY_ICONS = {
 
   CORPORATE: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="news-cat-icon" aria-hidden="true">
     <line x1="4" y1="76" x2="76" y2="76" stroke="currentColor" stroke-width="1.5"/>

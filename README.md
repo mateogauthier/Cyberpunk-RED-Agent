@@ -50,14 +50,20 @@ Open `http://localhost:8000` in your browser. API docs at `http://localhost:8000
 ### COMM LINK
 Chat with your Agent. The interface maintains full conversation history client-side and passes it back with each request. The Agent speaks in Cyberpunk RED slang, references the Night City setting, and adapts its tone to match yours over time. If you have an Edgerunner File set up, the Agent will address you by your handle and incorporate your background into its responses.
 
+![COMM LINK chat interface](docs/UI/chat_interface.png)
+
 ### NIGHT CITY NET
 Generate breaking news articles from Night City's public information network. Each article is produced by the LLM and covers a randomized category — corporate espionage, gang warfare, netrunner incidents, NCPD operations, cyberpsychosis outbreaks, and more. Articles are persisted in SQLite and displayed newest-first (max 10 stored).
 
 ### NIGHT MARKETS
 Browse black market listings sourced through fixer contacts. Each listing is LLM-generated and covers a range of categories — weapons, vehicles, cyberware, stolen data, services, contraband, tech, and medtech — with prices that vary by category, rarity, and condition. Listings are persisted in SQLite (max 20 stored). Rarity tiers: COMMON, UNCOMMON, RARE, LEGENDARY. Condition tags: NEW, USED, HOT (stolen), SALVAGE.
 
+![Night Markets listing](docs/UI/night_market_simulator.png)
+
 ### EDGERUNNER FILE
 Set up your operator profile: street handle, profession (Solo, Netrunner, Fixer, etc.), bio, and an avatar image (URL-based). Profile data is stored in SQLite and injected into the Agent's system prompt on every chat request, so the Agent knows who it's talking to without asking for credentials.
+
+![Edgerunner profile](docs/UI/edgerunner_profile.png)
 
 ## Lore Folder
 

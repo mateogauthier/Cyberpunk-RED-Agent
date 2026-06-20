@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-from .agent import SYSTEM_PROMPT, NEWS_PROMPT, MARKET_PROMPT
+from .agent import SYSTEM_PROMPT, NEWS_PROMPT, MARKET_PROMPT, GIG_PROMPT
 from .db import init_db, get_connection
 from .llm import chat as llm_chat
 from .rag import index as lore_index
@@ -69,6 +69,19 @@ class MarketItem(BaseModel):
     district: str
     rarity: str = "COMMON"
     condition: str = "USED"
+    created_at: str | None = None
+
+
+class GigPosting(BaseModel):
+    title: str
+    category: str
+    fixer: str
+    payout: int
+    risk: str = "STREET"
+    district: str
+    description: str
+    contact: str
+    requirements: str = ""
     created_at: str | None = None
 
 
@@ -253,6 +266,67 @@ def generate_market_item():
         conn.commit()
 
     return item
+
+
+@app.get("/gigs", response_model=list[GigPosting])
+def get_gigs():
+    with get_connection() as conn:
+        rows = conn.execute(
+            "SELECT title, category, fixer, payout, risk, district, description, contact, requirements, created_at "
+            "FROM gigs ORDER BY created_at DESC LIMIT 20"
+        ).fetchall()
+    return [GigPosting(**dict(r)) for r in rows]
+
+
+@app.post("/gigs", response_model=GigPosting)
+def generate_gig():
+    try:
+        raw = llm_chat(
+            system_prompt=GIG_PROMPT,
+            history=[],
+            user_message="Generate a new gig posting for the Night City fixer board right now.",
+            context_chunks=None,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"LLM error: {e}")
+
+    text = raw.strip()
+    if text.startswith("```"):
+        text = text.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+    text = _fix_json_escapes(text)
+
+    try:
+        data = _json.loads(text)
+    except _json.JSONDecodeError as e:
+        raise HTTPException(status_code=502, detail=f"LLM returned invalid JSON: {e}")
+
+    gig = GigPosting(
+        title=data.get("title", "POSTING"),
+        category=data.get("category", "RECON"),
+        fixer=data.get("fixer", "ANONYMOUS"),
+        payout=int(data.get("payout", 0)),
+        risk=data.get("risk", "STREET"),
+        district=data.get("district", "NIGHT CITY"),
+        description=data.get("description", ""),
+        contact=data.get("contact", ""),
+        requirements=data.get("requirements", ""),
+    )
+
+    with get_connection() as conn:
+        conn.execute(
+            "INSERT INTO gigs (title, category, fixer, payout, risk, district, description, contact, requirements) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (gig.title, gig.category, gig.fixer, gig.payout, gig.risk,
+             gig.district, gig.description, gig.contact, gig.requirements),
+        )
+        conn.execute("""
+            DELETE FROM gigs WHERE id NOT IN (
+                SELECT id FROM gigs ORDER BY created_at DESC LIMIT 20
+            )
+        """)
+        conn.commit()
+
+    return gig
 
 
 @app.get("/profile", response_model=ProfileModel)

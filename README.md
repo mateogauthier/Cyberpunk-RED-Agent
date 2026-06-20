@@ -52,7 +52,7 @@ Chat with your Agent. The interface maintains full conversation history client-s
 
 ![COMM LINK chat interface](docs/UI/chat_interface.png)
 
-### NIGHT CITY NET
+### SCREAMSHEETS
 Generate breaking news articles from Night City's public information network. Each article is produced by the LLM and covers a randomized category — corporate espionage, gang warfare, netrunner incidents, NCPD operations, cyberpsychosis outbreaks, and more. Articles are persisted in SQLite and displayed newest-first (max 10 stored).
 
 ### NIGHT MARKETS

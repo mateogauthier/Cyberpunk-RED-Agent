@@ -3,10 +3,11 @@ import { initChat, renderSystem, renderAgent, showTyping, hideTyping, setInputEn
 import { initNews } from './news.js';
 import { initMarket } from './market.js';
 import { initProfile } from './profile.js';
+import { initGigs } from './gigs.js';
 
 // ── TAB ROUTING ───────────────────────────────────────────────────────────────
 
-const VALID_TABS = new Set(['chat', 'news', 'market', 'profile']);
+const VALID_TABS = new Set(['chat', 'news', 'market', 'gigs', 'profile']);
 const deckTrack  = document.getElementById('deck-track');
 
 function activateTab(name) {
@@ -58,6 +59,7 @@ async function boot() {
   initProfile();
   initNews();
   initMarket();
+  initGigs();
   activateTab(location.hash.slice(1) || 'chat');
 }
 

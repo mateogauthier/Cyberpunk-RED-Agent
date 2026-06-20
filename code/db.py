@@ -51,4 +51,19 @@ def init_db() -> None:
                 created_at TEXT NOT NULL DEFAULT (datetime('now'))
             )
         """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS gigs (
+                id           INTEGER PRIMARY KEY AUTOINCREMENT,
+                title        TEXT NOT NULL,
+                category     TEXT NOT NULL,
+                fixer        TEXT NOT NULL,
+                payout       INTEGER NOT NULL,
+                risk         TEXT NOT NULL DEFAULT 'STREET',
+                district     TEXT NOT NULL,
+                description  TEXT NOT NULL,
+                contact      TEXT NOT NULL,
+                requirements TEXT NOT NULL DEFAULT '',
+                created_at   TEXT NOT NULL DEFAULT (datetime('now'))
+            )
+        """)
         conn.commit()

@@ -1,3 +1,133 @@
+export const GIG_ICONS = {
+
+  THEFT: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="gig-cat-icon" aria-hidden="true">
+    <rect x="18" y="40" width="44" height="32" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M26 40 L26 22 Q26 6 52 6 Q68 6 68 22 L68 34" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="40" cy="56" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="40" y1="61" x2="40" y2="68" stroke="currentColor" stroke-width="1.5"/>
+    <rect x="22" y="44" width="36" height="24" fill="currentColor" opacity="0.08"/>
+    <line x1="64" y1="30" x2="72" y2="24" stroke="currentColor" stroke-width="1.2" opacity="0.6"/>
+    <line x1="68" y1="28" x2="62" y2="36" stroke="currentColor" stroke-width="1.2" opacity="0.6"/>
+  </svg>`,
+
+  ELIMINATION: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="gig-cat-icon" aria-hidden="true">
+    <circle cx="40" cy="40" r="28" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="40" cy="40" r="10" fill="none" stroke="currentColor" stroke-width="1"/>
+    <circle cx="40" cy="40" r="3" fill="currentColor"/>
+    <line x1="12" y1="40" x2="30" y2="40" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="50" y1="40" x2="68" y2="40" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="40" y1="12" x2="40" y2="30" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="40" y1="50" x2="40" y2="68" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="12" y1="36" x2="12" y2="44" stroke="currentColor" stroke-width="1"/>
+    <line x1="68" y1="36" x2="68" y2="44" stroke="currentColor" stroke-width="1"/>
+    <line x1="36" y1="12" x2="44" y2="12" stroke="currentColor" stroke-width="1"/>
+    <line x1="36" y1="68" x2="44" y2="68" stroke="currentColor" stroke-width="1"/>
+  </svg>`,
+
+  ESCORT: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="gig-cat-icon" aria-hidden="true">
+    <path d="M40 4 L68 14 L68 40 Q68 62 40 74 Q12 62 12 40 L12 14 Z" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M40 12 L62 20 L62 40 Q62 55 40 65 Q18 55 18 40 L18 20 Z" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.25"/>
+    <circle cx="40" cy="32" r="8" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    <path d="M26 56 L26 50 Q26 42 40 42 Q54 42 54 50 L54 56" fill="none" stroke="currentColor" stroke-width="1.2"/>
+  </svg>`,
+
+  TRANSPORT: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="gig-cat-icon" aria-hidden="true">
+    <rect x="4" y="28" width="52" height="32" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M56 40 L56 28 L72 44 L72 60 L56 60" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="18" cy="60" r="8" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="18" cy="60" r="3.5" fill="currentColor" opacity="0.5"/>
+    <circle cx="62" cy="60" r="8" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="62" cy="60" r="3.5" fill="currentColor" opacity="0.5"/>
+    <line x1="4" y1="44" x2="56" y2="44" stroke="currentColor" stroke-width="0.8" opacity="0.3"/>
+    <rect x="8" y="32" width="22" height="12" fill="currentColor" opacity="0.15"/>
+    <line x1="34" y1="32" x2="50" y2="32" stroke="currentColor" stroke-width="0.8" opacity="0.35"/>
+    <line x1="34" y1="38" x2="50" y2="38" stroke="currentColor" stroke-width="0.8" opacity="0.35"/>
+  </svg>`,
+
+  SMUGGLING: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="gig-cat-icon" aria-hidden="true">
+    <rect x="10" y="18" width="60" height="50" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <rect x="28" y="8" width="24" height="10" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="10" y1="34" x2="70" y2="34" stroke="currentColor" stroke-width="1"/>
+    <line x1="10" y1="52" x2="70" y2="52" stroke="currentColor" stroke-width="1"/>
+    <line x1="32" y1="18" x2="32" y2="68" stroke="currentColor" stroke-width="0.8" opacity="0.4"/>
+    <line x1="48" y1="18" x2="48" y2="68" stroke="currentColor" stroke-width="0.8" opacity="0.4"/>
+    <circle cx="24" cy="34" r="9" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+    <line x1="18" y1="28" x2="30" y2="40" stroke="currentColor" stroke-width="1.5" opacity="0.65"/>
+    <line x1="30" y1="28" x2="18" y2="40" stroke="currentColor" stroke-width="1.5" opacity="0.65"/>
+  </svg>`,
+
+  EXTRACTION: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="gig-cat-icon" aria-hidden="true">
+    <rect x="6" y="8" width="40" height="64" rx="1" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="4 2.5"/>
+    <circle cx="26" cy="24" r="7" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="26" y1="31" x2="26" y2="50" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="26" y1="50" x2="18" y2="64" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="26" y1="50" x2="34" y2="64" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="26" y1="40" x2="16" y2="46" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="26" y1="40" x2="40" y2="34" stroke="currentColor" stroke-width="1.2"/>
+    <line x1="46" y1="40" x2="74" y2="40" stroke="currentColor" stroke-width="2"/>
+    <line x1="62" y1="30" x2="74" y2="40" stroke="currentColor" stroke-width="2"/>
+    <line x1="62" y1="50" x2="74" y2="40" stroke="currentColor" stroke-width="2"/>
+  </svg>`,
+
+  SABOTAGE: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="gig-cat-icon" aria-hidden="true">
+    <circle cx="40" cy="40" r="12" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="40" cy="40" r="5" fill="currentColor" opacity="0.55"/>
+    <line x1="40" y1="28" x2="40" y2="10" stroke="currentColor" stroke-width="2"/>
+    <line x1="49" y1="31" x2="60" y2="20" stroke="currentColor" stroke-width="2"/>
+    <line x1="52" y1="40" x2="70" y2="40" stroke="currentColor" stroke-width="2"/>
+    <line x1="49" y1="49" x2="60" y2="60" stroke="currentColor" stroke-width="2"/>
+    <line x1="40" y1="52" x2="40" y2="70" stroke="currentColor" stroke-width="2"/>
+    <line x1="31" y1="49" x2="20" y2="60" stroke="currentColor" stroke-width="2"/>
+    <line x1="28" y1="40" x2="10" y2="40" stroke="currentColor" stroke-width="2"/>
+    <line x1="31" y1="31" x2="20" y2="20" stroke="currentColor" stroke-width="2"/>
+    <line x1="45" y1="29" x2="50" y2="18" stroke="currentColor" stroke-width="1" opacity="0.45"/>
+    <line x1="29" y1="45" x2="18" y2="50" stroke="currentColor" stroke-width="1" opacity="0.45"/>
+    <line x1="52" y1="45" x2="62" y2="50" stroke="currentColor" stroke-width="1" opacity="0.45"/>
+    <line x1="44" y1="52" x2="49" y2="62" stroke="currentColor" stroke-width="1" opacity="0.45"/>
+  </svg>`,
+
+  RECON: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="gig-cat-icon" aria-hidden="true">
+    <path d="M4 40 Q20 14 40 14 Q60 14 76 40 Q60 66 40 66 Q20 66 4 40Z" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="40" cy="40" r="13" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    <circle cx="40" cy="40" r="5" fill="currentColor"/>
+    <line x1="8" y1="36" x2="72" y2="36" stroke="currentColor" stroke-width="0.6" opacity="0.25"/>
+    <line x1="4" y1="40" x2="76" y2="40" stroke="currentColor" stroke-width="0.6" opacity="0.25"/>
+    <line x1="8" y1="44" x2="72" y2="44" stroke="currentColor" stroke-width="0.6" opacity="0.25"/>
+    <path d="M4 40 L4 28 L12 28" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+    <path d="M76 40 L76 28 L68 28" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+    <path d="M4 40 L4 52 L12 52" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+    <path d="M76 40 L76 52 L68 52" fill="none" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+  </svg>`,
+
+  HACK: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="gig-cat-icon" aria-hidden="true">
+    <rect x="6" y="12" width="68" height="48" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <rect x="6" y="12" width="68" height="10" fill="currentColor" opacity="0.15"/>
+    <circle cx="16" cy="17" r="2" fill="currentColor" opacity="0.5"/>
+    <circle cx="24" cy="17" r="2" fill="currentColor" opacity="0.5"/>
+    <circle cx="32" cy="17" r="2" fill="currentColor" opacity="0.5"/>
+    <polyline points="14,30 20,36 14,42" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="26" y1="30" x2="48" y2="30" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="26" y1="38" x2="60" y2="38" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="26" y1="46" x2="40" y2="46" stroke="currentColor" stroke-width="1.5"/>
+    <rect x="26" y="50" width="8" height="5" fill="currentColor" opacity="0.6"/>
+    <line x1="28" y1="60" x2="52" y2="60" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="40" cy="68" r="6" fill="none" stroke="currentColor" stroke-width="1.2"/>
+    <circle cx="40" cy="68" r="2" fill="currentColor" opacity="0.6"/>
+  </svg>`,
+
+  RECOVERY: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="gig-cat-icon" aria-hidden="true">
+    <circle cx="32" cy="32" r="20" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="32" cy="32" r="10" fill="none" stroke="currentColor" stroke-width="0.8" opacity="0.35"/>
+    <line x1="47" y1="47" x2="68" y2="68" stroke="currentColor" stroke-width="2.5"/>
+    <line x1="32" y1="12" x2="32" y2="52" stroke="currentColor" stroke-width="0.7" opacity="0.3"/>
+    <line x1="12" y1="32" x2="52" y2="32" stroke="currentColor" stroke-width="0.7" opacity="0.3"/>
+    <path d="M54 16 A26 26 0 0 1 68 32" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="56" y1="8" x2="54" y2="16" stroke="currentColor" stroke-width="1.5"/>
+    <line x1="62" y1="14" x2="54" y2="16" stroke="currentColor" stroke-width="1.5"/>
+  </svg>`,
+
+};
+
 export const MARKET_ICONS = {
 
   WEAPONS: `<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" class="market-cat-icon" aria-hidden="true">

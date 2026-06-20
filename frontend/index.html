@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AGENT // SAAI INTERFACE</title>
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
@@ -165,6 +166,102 @@
             </div>
 
           </div>
+          <div class="profile-section-divider">◈ CORE STATS ◈</div>
+          <div id="stats-grid" class="stats-grid">
+            <div class="stat-block">
+              <div class="stat-name">INT</div>
+              <div class="stat-controls">
+                <button type="button" class="stat-btn" data-key="stat_int" data-delta="-1">−</button>
+                <span class="stat-value" id="sv-stat_int">5</span>
+                <button type="button" class="stat-btn" data-key="stat_int" data-delta="1">+</button>
+              </div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-name">REF</div>
+              <div class="stat-controls">
+                <button type="button" class="stat-btn" data-key="stat_ref" data-delta="-1">−</button>
+                <span class="stat-value" id="sv-stat_ref">5</span>
+                <button type="button" class="stat-btn" data-key="stat_ref" data-delta="1">+</button>
+              </div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-name">TECH</div>
+              <div class="stat-controls">
+                <button type="button" class="stat-btn" data-key="stat_tech" data-delta="-1">−</button>
+                <span class="stat-value" id="sv-stat_tech">5</span>
+                <button type="button" class="stat-btn" data-key="stat_tech" data-delta="1">+</button>
+              </div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-name">COOL</div>
+              <div class="stat-controls">
+                <button type="button" class="stat-btn" data-key="stat_cool" data-delta="-1">−</button>
+                <span class="stat-value" id="sv-stat_cool">5</span>
+                <button type="button" class="stat-btn" data-key="stat_cool" data-delta="1">+</button>
+              </div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-name">WILL</div>
+              <div class="stat-controls">
+                <button type="button" class="stat-btn" data-key="stat_will" data-delta="-1">−</button>
+                <span class="stat-value" id="sv-stat_will">5</span>
+                <button type="button" class="stat-btn" data-key="stat_will" data-delta="1">+</button>
+              </div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-name">LUCK</div>
+              <div class="stat-controls">
+                <button type="button" class="stat-btn" data-key="stat_luck" data-delta="-1">−</button>
+                <span class="stat-value" id="sv-stat_luck">5</span>
+                <button type="button" class="stat-btn" data-key="stat_luck" data-delta="1">+</button>
+              </div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-name">MOVE</div>
+              <div class="stat-controls">
+                <button type="button" class="stat-btn" data-key="stat_move" data-delta="-1">−</button>
+                <span class="stat-value" id="sv-stat_move">5</span>
+                <button type="button" class="stat-btn" data-key="stat_move" data-delta="1">+</button>
+              </div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-name">BODY</div>
+              <div class="stat-controls">
+                <button type="button" class="stat-btn" data-key="stat_body" data-delta="-1">−</button>
+                <span class="stat-value" id="sv-stat_body">5</span>
+                <button type="button" class="stat-btn" data-key="stat_body" data-delta="1">+</button>
+              </div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-name">EMP</div>
+              <div class="stat-controls">
+                <button type="button" class="stat-btn" data-key="stat_emp" data-delta="-1">−</button>
+                <span class="stat-value" id="sv-stat_emp">5</span>
+                <button type="button" class="stat-btn" data-key="stat_emp" data-delta="1">+</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-section-divider">◈ HUMANITY ◈</div>
+          <div class="humanity-tracker">
+            <div class="humanity-bar-wrap">
+              <div class="humanity-bar state-intact" id="humanity-bar"></div>
+            </div>
+            <div class="humanity-readout">
+              <div class="humanity-numbers">
+                <span id="humanity-current-val">50</span><span class="humanity-sep"> / </span><span id="humanity-max-val">50</span>
+              </div>
+              <div class="humanity-state-badge state-intact" id="humanity-state">INTACT</div>
+            </div>
+            <div class="humanity-controls">
+              <button type="button" id="humanity-lose-btn" class="humanity-btn humanity-btn--lose">− TAKE LOSS</button>
+              <input type="number" id="humanity-step" class="humanity-step-input" value="1" min="1" max="100" />
+              <button type="button" id="humanity-restore-btn" class="humanity-btn humanity-btn--restore">+ RESTORE</button>
+              <button type="button" id="humanity-full-btn" class="humanity-btn humanity-btn--full">RESET</button>
+            </div>
+            <div class="humanity-emp-line">EFFECTIVE EMP: <span id="emp-effective">5</span></div>
+          </div>
+
           <button type="submit" id="profile-save-btn" class="profile-save-btn">
             ◈ COMMIT TO RECORD ◈
           </button>

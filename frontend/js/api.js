@@ -9,6 +9,7 @@ export const fetchMarket    = () => fetch('/market');
 export const generateMarket = () => fetch('/market', { method: 'POST' });
 export const fetchGigs      = () => fetch('/gigs');
 export const generateGig    = () => fetch('/gigs', { method: 'POST' });
+export const fetchGreeting  = () => fetch('/greeting');
 export const fetchProfile   = () => fetch('/profile');
 
 export const saveProfile  = profile =>

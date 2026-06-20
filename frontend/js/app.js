@@ -4,6 +4,7 @@ import { initNews } from './news.js';
 import { initMarket } from './market.js';
 import { initProfile } from './profile.js';
 import { initGigs } from './gigs.js';
+import { fetchGreeting } from './api.js';
 
 // ── TAB ROUTING ───────────────────────────────────────────────────────────────
 
@@ -48,10 +49,18 @@ async function boot() {
 
   await delay(500);
   showTyping();
-  await delay(900);
-  hideTyping();
 
-  const opening = "Agent online. I'm your dedicated SAAI interface — jacked into Ziggurat's CitiNet, the Data Pool, and The Garden. Everything Night City's grid can pull, I can reach. State your query.";
+  const FALLBACK = "Agent online. Jacked into CitiNet. State your query.";
+  let opening = FALLBACK;
+  try {
+    const res = await fetchGreeting();
+    if (res.ok) {
+      const data = await res.json();
+      if (data.greeting) opening = data.greeting;
+    }
+  } catch (_) {}
+
+  hideTyping();
   addToHistory({ role: 'assistant', content: opening });
   renderAgent(opening);
 

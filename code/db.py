@@ -24,7 +24,17 @@ def init_db() -> None:
         try:
             conn.execute("ALTER TABLE profile ADD COLUMN avatar_url TEXT NOT NULL DEFAULT ''")
         except Exception:
-            pass  # column already exists
+            pass
+        for col in ('stat_int', 'stat_ref', 'stat_tech', 'stat_cool', 'stat_will',
+                    'stat_luck', 'stat_move', 'stat_body', 'stat_emp'):
+            try:
+                conn.execute(f"ALTER TABLE profile ADD COLUMN {col} INTEGER NOT NULL DEFAULT 5")
+            except Exception:
+                pass
+        try:
+            conn.execute("ALTER TABLE profile ADD COLUMN humanity_current INTEGER NOT NULL DEFAULT 50")
+        except Exception:
+            pass
         conn.execute("INSERT OR IGNORE INTO profile (id) VALUES (1)")
         conn.execute("""
             CREATE TABLE IF NOT EXISTS market_items (

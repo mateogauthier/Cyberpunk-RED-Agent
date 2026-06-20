@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-from .agent import SYSTEM_PROMPT, NEWS_PROMPT, MARKET_PROMPT, GIG_PROMPT
+from .agent import SYSTEM_PROMPT, NEWS_PROMPT, MARKET_PROMPT, GIG_PROMPT, GREETING_PROMPT
 from .db import init_db, get_connection
 from .llm import chat as llm_chat
 from .rag import index as lore_index
@@ -35,6 +35,14 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="Cyberpunk RED Agent", version="0.1.0", lifespan=lifespan)
+
+
+@app.middleware("http")
+async def no_cache_static(request, call_next):
+    response = await call_next(request)
+    if request.url.path.endswith((".js", ".css")):
+        response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 class Message(BaseModel):
@@ -90,6 +98,16 @@ class ProfileModel(BaseModel):
     role: str = ""
     bio: str = ""
     avatar_url: str = ""
+    stat_int:  int = 5
+    stat_ref:  int = 5
+    stat_tech: int = 5
+    stat_cool: int = 5
+    stat_will: int = 5
+    stat_luck: int = 5
+    stat_move: int = 5
+    stat_body: int = 5
+    stat_emp:  int = 5
+    humanity_current: int = 50
 
 
 @app.get("/status")
@@ -108,11 +126,7 @@ def reload_lore():
     return {"status": "ok", "chunks_loaded": count}
 
 
-@app.post("/chat", response_model=ChatResponse)
-def chat(req: ChatRequest):
-    history = [{"role": m.role, "content": m.content} for m in req.history]
-    context = lore_index.retrieve(req.message)
-
+def _build_system_prompt() -> str:
     system_prompt = SYSTEM_PROMPT
     with get_connection() as conn:
         row = conn.execute("SELECT handle, role, bio FROM profile WHERE id = 1").fetchone()
@@ -131,17 +145,36 @@ def chat(req: ChatRequest):
             "Never ask them for identification or credentials — you know who they are."
         )
         system_prompt = SYSTEM_PROMPT + "\n\n" + "\n".join(lines)
+    return system_prompt
 
+
+@app.get("/greeting")
+def greeting():
     try:
         response = llm_chat(
-            system_prompt=system_prompt,
+            system_prompt=_build_system_prompt(),
+            history=[],
+            user_message=GREETING_PROMPT,
+            context_chunks=None,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"LLM error: {e}")
+    return {"greeting": response}
+
+
+@app.post("/chat", response_model=ChatResponse)
+def chat(req: ChatRequest):
+    history = [{"role": m.role, "content": m.content} for m in req.history]
+    context = lore_index.retrieve(req.message)
+    try:
+        response = llm_chat(
+            system_prompt=_build_system_prompt(),
             history=history,
             user_message=req.message,
             context_chunks=context,
         )
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"LLM error: {e}")
-
     return ChatResponse(response=response)
 
 
@@ -329,19 +362,34 @@ def generate_gig():
     return gig
 
 
+_PROFILE_COLS = (
+    "handle, role, bio, avatar_url, "
+    "stat_int, stat_ref, stat_tech, stat_cool, stat_will, "
+    "stat_luck, stat_move, stat_body, stat_emp, humanity_current"
+)
+
+
 @app.get("/profile", response_model=ProfileModel)
 def get_profile():
     with get_connection() as conn:
-        row = conn.execute("SELECT handle, role, bio, avatar_url FROM profile WHERE id = 1").fetchone()
-    return ProfileModel(handle=row["handle"], role=row["role"], bio=row["bio"], avatar_url=row["avatar_url"])
+        row = conn.execute(f"SELECT {_PROFILE_COLS} FROM profile WHERE id = 1").fetchone()
+    return ProfileModel(**dict(row))
 
 
 @app.post("/profile", response_model=ProfileModel)
 def save_profile(profile: ProfileModel):
     with get_connection() as conn:
         conn.execute(
-            "UPDATE profile SET handle = ?, role = ?, bio = ?, avatar_url = ? WHERE id = 1",
-            (profile.handle, profile.role, profile.bio, profile.avatar_url),
+            """UPDATE profile SET
+               handle = ?, role = ?, bio = ?, avatar_url = ?,
+               stat_int = ?, stat_ref = ?, stat_tech = ?, stat_cool = ?, stat_will = ?,
+               stat_luck = ?, stat_move = ?, stat_body = ?, stat_emp = ?,
+               humanity_current = ?
+               WHERE id = 1""",
+            (profile.handle, profile.role, profile.bio, profile.avatar_url,
+             profile.stat_int, profile.stat_ref, profile.stat_tech, profile.stat_cool, profile.stat_will,
+             profile.stat_luck, profile.stat_move, profile.stat_body, profile.stat_emp,
+             profile.humanity_current),
         )
         conn.commit()
     return profile

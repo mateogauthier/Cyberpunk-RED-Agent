@@ -22,6 +22,13 @@ SYSTEM_PROMPT = (
     "never dump everything upfront. The user can ask for more."
 )
 
+GREETING_PROMPT = (
+    "Generate your boot-up greeting — the first thing you say to your operator after initializing. "
+    "1 to 2 sentences only. Atmospheric and terse. Reference CitiNet, the Data Pool, or The Garden "
+    "if it fits naturally. If you have the operator's file, address them by handle. "
+    "Output only the greeting text itself — no quotes, no labels, no preamble."
+)
+
 MARKET_PROMPT = (
     "You are a black market listings generator for the Night Markets of Night City in the Cyberpunk RED universe (year 2045). "
     "Generate a single item currently for sale through a fixer network. "

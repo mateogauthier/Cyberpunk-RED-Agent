@@ -57,6 +57,7 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     response: str
+    lore_chunks: list[str] = []
 
 
 class NewsResponse(BaseModel):
@@ -175,7 +176,7 @@ def chat(req: ChatRequest):
         )
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"LLM error: {e}")
-    return ChatResponse(response=response)
+    return ChatResponse(response=response, lore_chunks=context or [])
 
 
 @app.get("/news", response_model=list[NewsResponse])

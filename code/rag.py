@@ -9,6 +9,11 @@ from typing import Optional
 
 from rank_bm25 import BM25Okapi
 
+
+def _tokenize(text: str) -> list[str]:
+    """Lowercase and strip punctuation so index and query tokens match."""
+    return [w for w in re.sub(r"[^a-z0-9\s]", "", text.lower()).split() if w]
+
 logger = logging.getLogger(__name__)
 
 LORE_DIR   = Path("lore")
@@ -71,7 +76,7 @@ def _chunk(source: str, text: str) -> list[dict]:
         end = min(start + CHUNK_SIZE, len(words))
         chunk_words = words[start:end]
         if len(chunk_words) >= MIN_CHUNK_WORDS:
-            chunks.append({"source": source, "text": " ".join(chunk_words), "tokens": chunk_words})
+            chunks.append({"source": source, "text": " ".join(chunk_words), "tokens": _tokenize(" ".join(chunk_words))})
         start += CHUNK_SIZE - CHUNK_OVERLAP
     return chunks
 
@@ -151,7 +156,7 @@ class LoreIndex:
         if not bm25 or not chunks:
             return []
         min_score = float(os.getenv("LORE_MIN_SCORE", "7.0"))
-        scores = bm25.get_scores(query.lower().split())
+        scores = bm25.get_scores(_tokenize(query))
         ranked = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)
         results = []
         for i in ranked[:top_k]:

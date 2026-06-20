@@ -16,9 +16,13 @@ def chat(
         lore_block = "\n\n---\n\n".join(context_chunks)
         full_prompt = (
             f"{system_prompt}\n\n"
-            "## LORE REFERENCE\n"
-            "The following excerpts are from authoritative Cyberpunk RED lore sources. "
-            "Use them to inform your response. Do not quote them verbatim — speak as the Agent would.\n\n"
+            "## LORE REFERENCE — DATA POOL RETRIEVAL\n"
+            "The following excerpts were pulled from authoritative Cyberpunk RED source material. "
+            "Treat these as the actual data your search returned. "
+            "Your answer MUST be grounded in this content — do not invent, contradict, or speculate beyond what is here. "
+            "Translate the facts into your voice as the Agent; do not quote verbatim. "
+            "If the excerpts do not contain enough to answer the question, say what you found and what is missing — "
+            "never fabricate a plausible-sounding answer.\n\n"
             f"{lore_block}"
         )
     else:

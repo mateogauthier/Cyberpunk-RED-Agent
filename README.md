@@ -165,7 +165,7 @@ lore/              — Drop your lore files here (gitignored)
 {
   "response": "Rogue is a legendary Solo who...",
   "lore_chunks": [
-    "[Official Rulebook (Third print).pdf]\nOnce upon a time Rogue and her ex-partner..."
+    "[Official_Rulebook.pdf]\nOnce upon a time Rogue and her ex-partner..."
   ]
 }
 ```

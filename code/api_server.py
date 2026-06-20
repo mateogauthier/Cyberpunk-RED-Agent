@@ -34,7 +34,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="Cyberpunk RED Agent", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="Cyberpunk RED Agent", version="0.2.0", lifespan=lifespan)
 
 
 @app.middleware("http")
@@ -116,7 +116,7 @@ def status():
     return {
         "status": "online",
         "project": "Cyberpunk RED Agent",
-        "version": "0.1.0",
+        "version": "0.2.0",
         "lore_chunks": lore_index.chunk_count,
     }
 

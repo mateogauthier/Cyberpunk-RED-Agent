@@ -87,3 +87,12 @@ def init_db() -> None:
             )
         """)
         conn.commit()
+
+
+def get_shard_names(category: str) -> list[str]:
+    with get_connection() as conn:
+        rows = conn.execute(
+            "SELECT name FROM shards WHERE category = ? ORDER BY name",
+            (category,),
+        ).fetchall()
+    return [r["name"] for r in rows]

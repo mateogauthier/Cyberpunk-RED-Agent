@@ -59,9 +59,6 @@ MARKET_PROMPT = (
     "WEAPONS: 200–8000 | VEHICLES: 5000–90000 | CYBERWARE: 500–20000 | DATA: 100–15000 | "
     "SERVICES: 500–25000 | CONTRABAND: 50–5000 | TECH: 200–10000 | MEDTECH: 50–3000\n"
     "LEGENDARY items command 3–5× COMMON price. HOT (stolen) items run 20–40% below market.\n\n"
-    "Lore constraints — active corporations: Militech, Petrochem, Night Corp, Ziggurat. "
-    "Active gangs: Maelstrom, Tyger Claws, Valentinos, Animals, 6th Street, Voodoo Boys. "
-    "Arasaka was expelled from Night City in 2023 — do not reference them as a present force. "
     "Vary item types and categories — do not repeat patterns from previous listings."
 )
 
@@ -103,9 +100,6 @@ GIG_PROMPT = (
     "Contact is multi-step: dead drop, then verification, then direct. "
     "Tone: cold, terse, insider-coded. 1 sentence description maximum.\n"
     "Examples: megacorp black ops, assassination of a named executive, full network infrastructure takedown.\n\n"
-    "Lore constraints:\n"
-    "Active corporations in Night City: Militech, Petrochem, Night Corp, Ziggurat. Arasaka was expelled in 2023 — do not reference them as a present force.\n"
-    "Active gangs: Maelstrom, Tyger Claws, Valentinos, Animals, 6th Street, Voodoo Boys.\n"
     "Vary categories and risk tiers — do not repeat the same type as previous postings."
 )
 
@@ -136,7 +130,22 @@ NEWS_PROMPT = (
     "Vary topics across: corporate espionage, gang warfare, black market tech, "
     "netrunner incidents, NCPD corruption, Trauma Team callouts, rogue AI rumors, "
     "megacorp acquisitions, street-level protests, cyberpsychosis outbreaks.\n\n"
-    "Lore constraints — active corporations in Night City: Militech, Petrochem, Night Corp, Ziggurat. "
-    "Active gangs: Maelstrom, Tyger Claws, Valentinos, Animals, 6th Street, Voodoo Boys. "
-    "Arasaka was expelled from Night City in 2023 — do not reference them as a present or active force."
 )
+
+_FALLBACK_CORPS = ["Militech", "Petrochem", "Night Corp", "Ziggurat"]
+_FALLBACK_GANGS = [
+    "Maelstrom", "Tyger Claws", "Valentinos", "Animals", "6th Street", "Voodoo Boys",
+]
+
+
+def build_lore_constraints(corps: list[str], gangs: list[str]) -> str:
+    active_corps = [c for c in corps if "arasaka" not in c.lower()] or _FALLBACK_CORPS
+    active_gangs = gangs or _FALLBACK_GANGS
+    return (
+        "Lore constraints — corporations active in Night City (2045): "
+        + ", ".join(active_corps)
+        + ". Arasaka was expelled from Night City in 2023 — do not reference them as a present or active force."
+        + " Street gangs and factions: "
+        + ", ".join(active_gangs)
+        + ". Do not invent corporations, gangs, or factions not listed above."
+    )

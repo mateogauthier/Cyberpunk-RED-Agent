@@ -8,8 +8,8 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 from json_repair import loads as _repair_loads
 
-from .agent import SYSTEM_PROMPT, NEWS_PROMPT, MARKET_PROMPT, GIG_PROMPT, GREETING_PROMPT
-from .db import init_db, get_connection
+from .agent import SYSTEM_PROMPT, NEWS_PROMPT, MARKET_PROMPT, GIG_PROMPT, GREETING_PROMPT, build_lore_constraints
+from .db import init_db, get_connection, get_shard_names
 from .llm import chat as llm_chat
 from .rag import index as lore_index
 from .shards import run_full_extraction
@@ -20,6 +20,13 @@ load_dotenv()
 
 def _now_2045() -> str:
     return datetime.utcnow().replace(year=2045).strftime("%Y-%m-%d %H:%M:%S")
+
+
+def _generation_lore_block() -> str:
+    return build_lore_constraints(
+        corps=get_shard_names("CORPORATION"),
+        gangs=get_shard_names("FACTION"),
+    )
 
 
 @asynccontextmanager
@@ -195,7 +202,7 @@ def get_news():
 def generate_news():
     try:
         raw = llm_chat(
-            system_prompt=NEWS_PROMPT,
+            system_prompt=NEWS_PROMPT + _generation_lore_block(),
             history=[],
             user_message="Generate a breaking news article for the Night City Net right now.",
             context_chunks=None,
@@ -253,7 +260,7 @@ def get_market():
 def generate_market_item():
     try:
         raw = llm_chat(
-            system_prompt=MARKET_PROMPT,
+            system_prompt=MARKET_PROMPT + _generation_lore_block(),
             history=[],
             user_message="Generate a new black market listing for the Night Markets right now.",
             context_chunks=None,
@@ -316,7 +323,7 @@ def get_gigs():
 def generate_gig():
     try:
         raw = llm_chat(
-            system_prompt=GIG_PROMPT,
+            system_prompt=GIG_PROMPT + _generation_lore_block(),
             history=[],
             user_message="Generate a new gig posting for the Night City fixer board right now.",
             context_chunks=None,

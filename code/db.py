@@ -76,4 +76,14 @@ def init_db() -> None:
                 created_at   TEXT NOT NULL DEFAULT (datetime('now'))
             )
         """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS shards (
+                id           INTEGER PRIMARY KEY AUTOINCREMENT,
+                category     TEXT NOT NULL,
+                name         TEXT NOT NULL,
+                description  TEXT NOT NULL,
+                extracted_at TEXT NOT NULL DEFAULT (datetime('now')),
+                UNIQUE(category, name)
+            )
+        """)
         conn.commit()

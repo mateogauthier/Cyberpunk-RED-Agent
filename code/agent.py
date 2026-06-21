@@ -22,7 +22,15 @@ SYSTEM_PROMPT = (
     "never dump everything upfront. The user can ask for more.\n\n"
     "When lore data is provided in a LORE REFERENCE block, that is the result of your search. "
     "Report it accurately. Do not roleplay around it with 'signal noise', 'encrypted results', "
-    "or other in-character deflections — if the data is there, deliver it."
+    "or other in-character deflections — if the data is there, deliver it.\n\n"
+    "You have access to live tools: roll dice for any Cyberpunk RED roll, and pull live board data "
+    "(gigs, news, market listings) when asked about them. "
+    "Call them silently — do not announce that you are calling a tool or narrate the action. "
+    "Just deliver the result naturally.\n\n"
+    "IMPORTANT: When asked about current gigs, current news, or current market listings, "
+    "ALWAYS call the appropriate tool — even if your context already contains general lore about those topics. "
+    "Lore describes how things work in general; the tools return what is actually available right now. "
+    "Never substitute lore knowledge for a live tool call when the user is asking about current state."
 )
 
 GREETING_PROMPT = (
@@ -127,5 +135,8 @@ NEWS_PROMPT = (
     "GENERAL = anything that does not fit the above.\n\n"
     "Vary topics across: corporate espionage, gang warfare, black market tech, "
     "netrunner incidents, NCPD corruption, Trauma Team callouts, rogue AI rumors, "
-    "megacorp acquisitions, street-level protests, cyberpsychosis outbreaks."
+    "megacorp acquisitions, street-level protests, cyberpsychosis outbreaks.\n\n"
+    "Lore constraints — active corporations in Night City: Militech, Petrochem, Night Corp, Ziggurat. "
+    "Active gangs: Maelstrom, Tyger Claws, Valentinos, Animals, 6th Street, Voodoo Boys. "
+    "Arasaka was expelled from Night City in 2023 — do not reference them as a present or active force."
 )

@@ -12,7 +12,7 @@ An interactive chatbot that simulates an **Agent** from the Cyberpunk RED TTRPG 
 ## Prerequisites
 
 - Python 3.8+
-- [Ollama](https://ollama.com) running locally with at least one model pulled (e.g. `ollama pull llama3.2`)
+- [Ollama](https://ollama.com) running locally with at least one model pulled (e.g. `ollama pull gemma4`)
 
 ## Installation
 
@@ -33,12 +33,12 @@ An interactive chatbot that simulates an **Agent** from the Cyberpunk RED TTRPG 
 4. Create a `.env` file in the project root:
    ```env
    OLLAMA_HOST=http://localhost:11434
-   OLLAMA_MODEL=llama3.2
+   OLLAMA_MODEL=gemma4
    OLLAMA_NUM_CTX=8192
    OLLAMA_NUM_PREDICT=-1
    LORE_MIN_SCORE=7.0
    ```
-   - `OLLAMA_MODEL` — whichever model you have pulled in Ollama
+   - `OLLAMA_MODEL` — `gemma4` is recommended; it has native tool calling support. `llama3.2` still works for chat and RAG but has no reliable tool calling capability.
    - `OLLAMA_NUM_CTX` — context window size; 8192 comfortably fits lore + a long conversation
    - `OLLAMA_NUM_PREDICT` — max response tokens; `-1` lets the model end naturally
    - `LORE_MIN_SCORE` — minimum BM25 relevance score to inject a lore chunk; raise it to be more selective, lower it to retrieve more loosely related context
@@ -61,6 +61,8 @@ Chat with your Agent. The interface maintains full conversation history client-s
 On boot, the Agent generates a personalized greeting via the LLM — different each session, referencing CitiNet or the Data Pool if the context fits.
 
 Each Agent reply shows a **◈ N** badge when lore chunks were retrieved and injected into the response. Clicking the badge opens the **Raw Data Stream** panel, which shows the exact source file and text excerpt that informed the answer.
+
+The Agent has **agentic tool calling** when running with a model that supports it (gemma4). It can roll dice (`roll_dice`), pull live gig board listings (`get_gigs`), check recent news (`get_news`), and query the Night Market (`get_market`) — including filtering by district. Tool calls happen transparently during inference; the Agent loops up to five rounds of tool use before returning its final reply.
 
 ![COMM LINK chat interface](docs/UI/chat_interface.png)
 
@@ -88,6 +90,16 @@ Profile and stats are stored in SQLite and injected into the Agent's system prom
 
 ![Edgerunner profile](docs/UI/edgerunner_profile.png)
 
+### SHARDS
+
+Browse structured lore entities extracted from your lore files. The extraction process runs BM25 queries against the indexed lore library, then uses the LLM to identify and describe entities from the retrieved excerpts. Results are stored in SQLite and browsable across three sub-tabs:
+
+- **CORPORATIONS** — Megacorporations and significant companies operating in or around Night City
+- **DISTRICTS** — Neighborhoods, boroughs, and named zones of Night City
+- **FACTIONS** — Gangs, nomad clans, paramilitary groups, and other organized powers
+
+Extraction is manual (click **◈ EXTRACT LORE**) and takes roughly 60–90 seconds depending on model speed. Re-running extraction updates existing entries in place. Shard cards are collapsible — click a name to expand its description.
+
 ## Lore Folder
 
 The `lore/` folder is where you put your own Cyberpunk RED source material. The Agent reads it and uses it to ground its answers in canon.
@@ -109,12 +121,14 @@ POST http://localhost:8000/lore/reload
 code/
   api_server.py    — FastAPI app; all API routes + static file serving
   agent.py         — System prompts: Agent persona, greeting, news, market, gig generators
-  llm.py           — Ollama client wrapper with lore context injection
+  llm.py           — Ollama client with agentic tool-call loop (up to 5 rounds)
+  tools.py         — Tool definitions (roll_dice, get_gigs, get_news, get_market) and executor
   rag.py           — BM25 document loading, chunking, and retrieval
-  db.py            — SQLite setup (profile, news, market_items, gigs tables)
+  shards.py        — Lore entity extraction (CORPORATION, DISTRICT, FACTION) via BM25 + LLM
+  db.py            — SQLite setup (profile, news, market_items, gigs, shards tables)
   requirements.txt
 frontend/
-  index.html       — Single-page app shell with five tab panels
+  index.html       — Single-page app shell with six tab panels
   css/
     style.css      — Full cyberpunk theme; responsive for mobile/tablet/desktop
   js/
@@ -124,6 +138,7 @@ frontend/
     market.js      — Market listings rendering and generation trigger
     gigs.js        — Gig board rendering and generation trigger
     profile.js     — Edgerunner file form, stats grid, humanity tracker
+    shards.js      — Shards tab: extraction trigger, collapsible cards, folder sub-tabs
     api.js         — Thin fetch wrappers for all API endpoints
     icons.js       — SVG icons for news, market, and gig categories
     utils.js       — Shared helpers (escHtml, delay)
@@ -148,6 +163,8 @@ lore/              — Drop your lore files here (gitignored)
 | `POST` | `/gigs` | Generate and persist one gig posting |
 | `GET` | `/profile` | Return stored edgerunner profile |
 | `POST` | `/profile` | Upsert edgerunner profile |
+| `GET` | `/shards` | Return extracted lore entities grouped by category |
+| `POST` | `/shards/extract` | Run full lore extraction and upsert results into SQLite |
 
 ### `/chat` request / response
 

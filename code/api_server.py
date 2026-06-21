@@ -1,30 +1,25 @@
 from __future__ import annotations
-import json as _json
-import re as _re
 import threading
 from contextlib import asynccontextmanager
+from datetime import datetime
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from dotenv import load_dotenv
+from json_repair import loads as _repair_loads
 
 from .agent import SYSTEM_PROMPT, NEWS_PROMPT, MARKET_PROMPT, GIG_PROMPT, GREETING_PROMPT
 from .db import init_db, get_connection
 from .llm import chat as llm_chat
 from .rag import index as lore_index
+from .shards import run_full_extraction
+from .tools import AGENT_TOOLS
 
 load_dotenv()
 
-# Valid single-character JSON escape sequences per RFC 8259
-_VALID_JSON_ESCAPES = set('"\\\/bfnrtu')
 
-
-def _fix_json_escapes(s: str) -> str:
-    """Remove backslashes before characters that are not valid JSON escape targets."""
-    def _replace(m: _re.Match) -> str:
-        c = m.group(1)
-        return m.group(0) if c in _VALID_JSON_ESCAPES else c
-    return _re.sub(r'\\(.)', _replace, s)
+def _now_2045() -> str:
+    return datetime.utcnow().replace(year=2045).strftime("%Y-%m-%d %H:%M:%S")
 
 
 @asynccontextmanager
@@ -173,6 +168,7 @@ def chat(req: ChatRequest):
             history=history,
             user_message=req.message,
             context_chunks=context,
+            tools=AGENT_TOOLS,
         )
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"LLM error: {e}")
@@ -208,29 +204,30 @@ def generate_news():
         raise HTTPException(status_code=502, detail=f"LLM error: {e}")
 
     text = raw.strip()
-    # Strip markdown code fences that some models add despite instructions
     if text.startswith("```"):
         text = text.split("\n", 1)[1].rsplit("```", 1)[0].strip()
-    # Fix invalid JSON escape sequences (e.g. \' from LLM output)
-    text = _fix_json_escapes(text)
 
     try:
-        data = _json.loads(text)
-    except _json.JSONDecodeError as e:
+        data = _repair_loads(text)
+        if not isinstance(data, dict):
+            raise ValueError("not a JSON object")
+    except Exception as e:
         raise HTTPException(status_code=502, detail=f"LLM returned invalid JSON: {e}")
 
+    ts = _now_2045()
     article = NewsResponse(
         title=data.get("title", "UNTITLED"),
         byline=data.get("byline", "ANONYMOUS"),
         body=data.get("body", ""),
         district=data.get("district", "NIGHT CITY"),
         category=data.get("category", "GENERAL"),
+        created_at=ts,
     )
 
     with get_connection() as conn:
         conn.execute(
-            "INSERT INTO news (title, byline, body, district, category) VALUES (?, ?, ?, ?, ?)",
-            (article.title, article.byline, article.body, article.district, article.category),
+            "INSERT INTO news (title, byline, body, district, category, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+            (article.title, article.byline, article.body, article.district, article.category, ts),
         )
         conn.execute("""
             DELETE FROM news WHERE id NOT IN (
@@ -267,13 +264,15 @@ def generate_market_item():
     text = raw.strip()
     if text.startswith("```"):
         text = text.split("\n", 1)[1].rsplit("```", 1)[0].strip()
-    text = _fix_json_escapes(text)
 
     try:
-        data = _json.loads(text)
-    except _json.JSONDecodeError as e:
+        data = _repair_loads(text)
+        if not isinstance(data, dict):
+            raise ValueError("not a JSON object")
+    except Exception as e:
         raise HTTPException(status_code=502, detail=f"LLM returned invalid JSON: {e}")
 
+    ts = _now_2045()
     item = MarketItem(
         name=data.get("name", "UNKNOWN ITEM"),
         category=data.get("category", "TECH"),
@@ -283,14 +282,15 @@ def generate_market_item():
         district=data.get("district", "NIGHT CITY"),
         rarity=data.get("rarity", "COMMON"),
         condition=data.get("condition", "USED"),
+        created_at=ts,
     )
 
     with get_connection() as conn:
         conn.execute(
-            "INSERT INTO market_items (name, category, description, price, seller, district, rarity, condition) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO market_items (name, category, description, price, seller, district, rarity, condition, created_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (item.name, item.category, item.description, item.price,
-             item.seller, item.district, item.rarity, item.condition),
+             item.seller, item.district, item.rarity, item.condition, ts),
         )
         conn.execute("""
             DELETE FROM market_items WHERE id NOT IN (
@@ -327,13 +327,15 @@ def generate_gig():
     text = raw.strip()
     if text.startswith("```"):
         text = text.split("\n", 1)[1].rsplit("```", 1)[0].strip()
-    text = _fix_json_escapes(text)
 
     try:
-        data = _json.loads(text)
-    except _json.JSONDecodeError as e:
+        data = _repair_loads(text)
+        if not isinstance(data, dict):
+            raise ValueError("not a JSON object")
+    except Exception as e:
         raise HTTPException(status_code=502, detail=f"LLM returned invalid JSON: {e}")
 
+    ts = _now_2045()
     gig = GigPosting(
         title=data.get("title", "POSTING"),
         category=data.get("category", "RECON"),
@@ -344,14 +346,15 @@ def generate_gig():
         description=data.get("description", ""),
         contact=data.get("contact", ""),
         requirements=data.get("requirements", ""),
+        created_at=ts,
     )
 
     with get_connection() as conn:
         conn.execute(
-            "INSERT INTO gigs (title, category, fixer, payout, risk, district, description, contact, requirements) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            "INSERT INTO gigs (title, category, fixer, payout, risk, district, description, contact, requirements, created_at) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (gig.title, gig.category, gig.fixer, gig.payout, gig.risk,
-             gig.district, gig.description, gig.contact, gig.requirements),
+             gig.district, gig.description, gig.contact, gig.requirements, ts),
         )
         conn.execute("""
             DELETE FROM gigs WHERE id NOT IN (
@@ -361,6 +364,40 @@ def generate_gig():
         conn.commit()
 
     return gig
+
+
+class ShardItem(BaseModel):
+    id: int
+    category: str
+    name: str
+    description: str
+    extracted_at: str | None = None
+
+
+@app.get("/shards")
+def get_shards():
+    with get_connection() as conn:
+        rows = conn.execute(
+            "SELECT id, category, name, description, extracted_at FROM shards ORDER BY name ASC"
+        ).fetchall()
+    result: dict[str, list] = {"corporations": [], "districts": [], "factions": []}
+    category_map = {"CORPORATION": "corporations", "DISTRICT": "districts", "FACTION": "factions"}
+    for r in rows:
+        key = category_map.get(r["category"])
+        if key:
+            result[key].append(ShardItem(**dict(r)).model_dump())
+    return result
+
+
+@app.post("/shards/extract")
+def extract_shards():
+    if not lore_index.loaded:
+        raise HTTPException(status_code=503, detail="Lore index not ready — try again in a moment")
+    try:
+        counts = run_full_extraction(lore_index)
+    except Exception as e:
+        raise HTTPException(status_code=502, detail=f"Extraction error: {e}")
+    return {"counts": counts}
 
 
 _PROFILE_COLS = (

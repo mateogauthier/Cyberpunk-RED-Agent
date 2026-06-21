@@ -4,11 +4,12 @@ import { initNews } from './news.js';
 import { initMarket } from './market.js';
 import { initProfile } from './profile.js';
 import { initGigs } from './gigs.js';
+import { initShards } from './shards.js';
 import { fetchGreeting } from './api.js';
 
 // ── TAB ROUTING ───────────────────────────────────────────────────────────────
 
-const VALID_TABS = new Set(['chat', 'news', 'market', 'gigs', 'profile']);
+const VALID_TABS = new Set(['chat', 'news', 'market', 'gigs', 'profile', 'shards']);
 const deckTrack  = document.getElementById('deck-track');
 
 function activateTab(name) {
@@ -69,6 +70,7 @@ async function boot() {
   initNews();
   initMarket();
   initGigs();
+  initShards();
   activateTab(location.hash.slice(1) || 'chat');
 }
 

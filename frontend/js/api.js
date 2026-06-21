@@ -11,6 +11,8 @@ export const fetchGigs      = () => fetch('/gigs');
 export const generateGig    = () => fetch('/gigs', { method: 'POST' });
 export const fetchGreeting  = () => fetch('/greeting');
 export const fetchProfile   = () => fetch('/profile');
+export const fetchShards    = () => fetch('/shards');
+export const extractShards  = () => fetch('/shards/extract', { method: 'POST' });
 
 export const saveProfile  = profile =>
   fetch('/profile', { method: 'POST', headers: HEADERS, body: JSON.stringify(profile) });

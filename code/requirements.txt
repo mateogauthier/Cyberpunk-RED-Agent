@@ -6,3 +6,4 @@ ollama
 aiofiles
 rank-bm25
 pypdf
+json-repair

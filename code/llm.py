@@ -2,12 +2,17 @@ from __future__ import annotations
 import os
 import ollama
 
+from .tools import execute_tool
+
+_MAX_TOOL_ROUNDS = 5
+
 
 def chat(
     system_prompt: str,
     history: list[dict[str, str]],
     user_message: str,
     context_chunks: list[str] | None = None,
+    tools: list[dict] | None = None,
 ) -> str:
     model = os.getenv("OLLAMA_MODEL", "llama3.2")
     host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
@@ -32,13 +37,28 @@ def chat(
     num_predict = int(os.getenv("OLLAMA_NUM_PREDICT", "-1"))
 
     client = ollama.Client(host=host)
-    messages: list[dict[str, str]] = [{"role": "system", "content": full_prompt}]
+    messages: list[dict] = [{"role": "system", "content": full_prompt}]
     messages.extend(history)
     messages.append({"role": "user", "content": user_message})
 
-    response = client.chat(
-        model=model,
-        messages=messages,
-        options={"num_ctx": num_ctx, "num_predict": num_predict},
-    )
-    return response.message.content
+    active_tools = tools or []
+
+    for _ in range(_MAX_TOOL_ROUNDS):
+        response = client.chat(
+            model=model,
+            messages=messages,
+            tools=active_tools,
+            options={"num_ctx": num_ctx, "num_predict": num_predict},
+        )
+
+        if not response.message.tool_calls:
+            return response.message.content or ""
+
+        # Append assistant's tool-call turn, then execute each call
+        messages.append(response.message)
+        for tc in response.message.tool_calls:
+            result = execute_tool(tc.function.name, tc.function.arguments)
+            messages.append({"role": "tool", "content": result})
+
+    # Fallback: return whatever the model last produced
+    return response.message.content or ""

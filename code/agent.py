@@ -139,13 +139,12 @@ _FALLBACK_GANGS = [
 
 
 def build_lore_constraints(corps: list[str], gangs: list[str]) -> str:
-    active_corps = [c for c in corps if "arasaka" not in c.lower()] or _FALLBACK_CORPS
+    active_corps = corps or _FALLBACK_CORPS
     active_gangs = gangs or _FALLBACK_GANGS
     return (
-        "Lore constraints — corporations active in Night City (2045): "
+        "Lore constraints — corporations in Night City (2045): "
         + ", ".join(active_corps)
-        + ". Arasaka was expelled from Night City in 2023 — do not reference them as a present or active force."
-        + " Street gangs and factions: "
+        + ". Street gangs and factions: "
         + ", ".join(active_gangs)
         + ". Do not invent corporations, gangs, or factions not listed above."
     )

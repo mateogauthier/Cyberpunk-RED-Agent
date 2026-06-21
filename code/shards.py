@@ -1,5 +1,6 @@
 from __future__ import annotations
 import hashlib
+import re
 
 from json_repair import loads as _repair_loads
 
@@ -84,9 +85,15 @@ def _chunk_hash(text: str) -> str:
     return hashlib.md5(text.encode()).hexdigest()
 
 
+_CJK_RE = re.compile(
+    r'[⺀-⿿　-鿿豈-﫿︰-﹏]+'
+)
+
 def _normalize_name(name: str) -> str:
-    """Strip whitespace and trailing punctuation from entity names."""
-    return name.strip().rstrip(".,")
+    """Strip CJK annotation characters, collapse whitespace, trim punctuation."""
+    name = _CJK_RE.sub('', name)
+    name = re.sub(r'\s+', ' ', name).strip().rstrip(".,")
+    return name
 
 
 def _is_valid_name(name: str) -> bool:
